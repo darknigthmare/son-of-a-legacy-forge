@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#080914" />
+  <meta name="description" content="SON OF A…! Legacy Forge — Choisissez deux origines, forgez leur héritier et combattez à travers les Fractures." />
+  <title>SON OF A…! — Legacy Forge</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <button id="homeBtn" class="brand-button" aria-label="Retour au menu">
+        <span class="brand-kicker">LEGACY FORGE</span>
+        <span class="brand-title">SON OF A<span class="brand-punct">…!</span></span>
+      </button>
+      <div class="topbar-actions">
+        <div class="resource-pill" title="Essence dynastique">
+          <span class="resource-gem">◆</span>
+          <span id="essenceCount">0</span>
+        </div>
+        <button id="soundBtn" class="icon-button" aria-label="Activer ou couper le son" title="Son">♪</button>
+        <button id="fullscreenBtn" class="icon-button" aria-label="Plein écran" title="Plein écran">⛶</button>
+      </div>
+    </header>
+
+    <main id="screenRoot" class="screen-root" aria-live="polite"></main>
+
+    <footer class="footer-bar">
+      <span id="statusText">BERCEAU ZÉRO — EN ATTENTE</span>
+      <span class="footer-version">ÉDITION NAVIGATEUR 1.0</span>
+    </footer>
+  </div>
+
+  <div id="toastLayer" class="toast-layer" aria-live="assertive"></div>
+  <div id="modalLayer" class="modal-layer hidden" role="dialog" aria-modal="true"></div>
+
+  <template id="menuTemplate">
+    <section class="menu-screen screen-enter">
+      <div class="hero-copy">
+        <p class="eyebrow">DEUX ORIGINES. UNE DESCENDANCE. DES POSSIBILITÉS INTERDITES.</p>
+        <h1>Forge l’enfant<br /><span>qu’aucun monde n’attend.</span></h1>
+        <p class="hero-description">Sélectionne deux combattants, combine leurs pouvoirs, façonne leur héritier puis traverse les Fractures pour bâtir une dynastie jouable sur plusieurs générations.</p>
+        <div class="menu-actions">
+          <button class="primary-button menu-new">Nouvelle lignée <span>→</span></button>
+          <button class="secondary-button menu-continue">Continuer la dynastie</button>
+          <button class="ghost-button menu-lab">Laboratoire libre</button>
+          <button class="ghost-button menu-dynasty">Arbre généalogique</button>
+        </div>
+        <div class="menu-meta">
+          <button class="text-button menu-help">Comment jouer</button>
+          <span>•</span>
+          <button class="text-button menu-reset">Réinitialiser la sauvegarde</button>
+        </div>
+      </div>
+      <div class="hero-forge" aria-hidden="true">
+        <canvas class="forge-canvas" width="720" height="720"></canvas>
+        <div class="forge-caption">
+          <span>BERCEAU ZÉRO</span>
+          <strong id="menuDynastyCount">0 héritier</strong>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="fusionTemplate">
+    <section class="fusion-screen screen-enter">
+      <div class="section-heading compact-heading">
+        <div>
+          <p class="eyebrow">PROTOCOLE 01 — SÉLECTION GÉNÉTIQUE</p>
+          <h2>Choisis les deux origines</h2>
+        </div>
+        <div class="heading-actions">
+          <button class="ghost-button fusion-random">Sélection aléatoire</button>
+          <button class="secondary-button fusion-next" disabled>Configurer l’éducation <span>→</span></button>
+        </div>
+      </div>
+
+      <div class="fusion-layout">
+        <aside class="parent-slot parent-slot-a empty" data-slot="A">
+          <div class="slot-label">ORIGINE A</div>
+          <canvas width="360" height="360"></canvas>
+          <div class="slot-empty-copy"><strong>Premier parent</strong><span>Sélectionne une origine</span></div>
+          <div class="slot-info"></div>
+        </aside>
+
+        <div class="roster-panel">
+          <div class="roster-toolbar">
+            <div class="search-wrap"><span>⌕</span><input class="roster-search" type="search" placeholder="Rechercher une origine…" /></div>
+            <div class="roster-tabs">
+              <button class="tab-button active" data-filter="all">Toutes</button>
+              <button class="tab-button" data-filter="origin">Origines</button>
+              <button class="tab-button" data-filter="heir">Héritiers</button>
+            </div>
+          </div>
+          <div class="roster-grid"></div>
+        </div>
+
+        <aside class="parent-slot parent-slot-b empty" data-slot="B">
+          <div class="slot-label">ORIGINE B</div>
+          <canvas width="360" height="360"></canvas>
+          <div class="slot-empty-copy"><strong>Second parent</strong><span>Sélectionne une origine</span></div>
+          <div class="slot-info"></div>
+        </aside>
+      </div>
+      <p class="fusion-tip">Les héritiers enregistrés peuvent devenir parents. Deux exemplaires d’une même origine sont autorisés et produisent une lignée spécialisée.</p>
+    </section>
+  </template>
+
+  <template id="educationTemplate">
+    <section class="education-screen screen-enter">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PROTOCOLE 02 — ÉDUCATION ACCÉLÉRÉE</p>
+          <h2>Décide qui cet enfant deviendra</h2>
+          <p>Chaque décision modifie ses statistiques, son passif et parfois sa mutation.</p>
+        </div>
+        <div class="parent-miniatures"></div>
+      </div>
+      <div class="education-columns"></div>
+      <div class="education-footer">
+        <button class="ghost-button education-back">← Modifier les parents</button>
+        <div class="seed-wrap">
+          <label for="seedInput">Graine génétique</label>
+          <input id="seedInput" class="seed-input" maxlength="12" />
+          <button class="icon-button seed-random" title="Nouvelle graine">↻</button>
+        </div>
+        <button class="primary-button education-forge" disabled>Activer le Berceau <span>⚡</span></button>
+      </div>
+    </section>
+  </template>
+
+  <template id="revealTemplate">
+    <section class="reveal-screen screen-enter">
+      <div class="reveal-stage">
+        <canvas class="reveal-canvas" width="900" height="900"></canvas>
+        <div class="reveal-scan"></div>
+      </div>
+      <div class="reveal-panel">
+        <p class="eyebrow">PROTOCOLE 03 — HÉRITIER STABLE</p>
+        <div class="rarity-badge"></div>
+        <h2 class="child-name"></h2>
+        <p class="child-title"></p>
+        <div class="parent-line"></div>
+        <div class="child-stat-grid"></div>
+        <div class="ability-list"></div>
+        <div class="weakness-card"></div>
+        <div class="reveal-actions">
+          <button class="primary-button start-run">Entrer dans les Fractures <span>→</span></button>
+          <button class="secondary-button copy-code">Copier le code génétique</button>
+          <button class="ghost-button reveal-back">Recommencer</button>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="gameTemplate">
+    <section class="game-screen screen-enter">
+      <div class="game-frame">
+        <canvas id="gameCanvas" width="1280" height="720" tabindex="0" aria-label="Zone de combat"></canvas>
+        <div class="hud-layer">
+          <div class="hud-top-left">
+            <div class="portrait-frame"><canvas class="hud-portrait" width="112" height="112"></canvas></div>
+            <div class="hud-vitals">
+              <div class="hud-name-row"><strong class="hud-name"></strong><span class="hud-level">NIV. 1</span></div>
+              <div class="bar health-bar"><span></span><em class="health-text"></em></div>
+              <div class="bar xp-bar"><span></span><em class="xp-text"></em></div>
+            </div>
+          </div>
+          <div class="hud-top-center">
+            <span class="realm-label"></span>
+            <strong class="wave-label"></strong>
+            <small class="objective-label"></small>
+          </div>
+          <div class="hud-top-right">
+            <div class="score-box"><small>SCORE</small><strong class="score-value">0</strong></div>
+            <div class="combo-box"><small>COMBO</small><strong class="combo-value">x1</strong></div>
+            <button class="icon-button pause-button" title="Pause">Ⅱ</button>
+          </div>
+          <div class="boss-hud hidden">
+            <span class="boss-name"></span>
+            <div class="bar boss-bar"><span></span></div>
+          </div>
+          <div class="ability-dock"></div>
+          <div class="controls-hint">ZQSD/WASD : bouger · Souris : viser · Clic : attaquer · 1, 2, R : pouvoirs · Espace : esquive</div>
+          <div class="announcement hidden"></div>
+          <div class="damage-vignette"></div>
+          <div class="mobile-controls hidden">
+            <div class="touch-stick"><div></div></div>
+            <div class="touch-actions">
+              <button data-action="basic">●</button>
+              <button data-action="a">A</button>
+              <button data-action="b">B</button>
+              <button data-action="fusion">F</button>
+              <button data-action="dash">↯</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="resultsTemplate">
+    <section class="results-screen screen-enter">
+      <div class="results-visual"><canvas width="600" height="600"></canvas></div>
+      <div class="results-panel">
+        <p class="eyebrow result-kicker"></p>
+        <h2 class="result-title"></h2>
+        <p class="result-copy"></p>
+        <div class="result-stats"></div>
+        <div class="result-rewards"></div>
+        <div class="result-actions"></div>
+      </div>
+    </section>
+  </template>
+
+  <template id="dynastyTemplate">
+    <section class="dynasty-screen screen-enter">
+      <div class="section-heading compact-heading">
+        <div>
+          <p class="eyebrow">ARCHIVES DU BERCEAU</p>
+          <h2>Arbre généalogique</h2>
+          <p>Chaque héritier enregistré peut servir d’origine à une génération suivante.</p>
+        </div>
+        <div class="heading-actions">
+          <button class="secondary-button dynasty-new">Forger une nouvelle génération</button>
+          <button class="ghost-button dynasty-export">Exporter la sauvegarde</button>
+          <label class="ghost-button file-label">Importer<input class="dynasty-import" type="file" accept="application/json" /></label>
+        </div>
+      </div>
+      <div class="dynasty-summary"></div>
+      <div class="dynasty-content">
+        <div class="generation-lanes"></div>
+        <aside class="dynasty-details"><div class="empty-details">Sélectionne un héritier pour consulter son patrimoine génétique.</div></aside>
+      </div>
+    </section>
+  </template>
+
+  <template id="helpTemplate">
+    <section class="help-screen screen-enter">
+      <div class="section-heading compact-heading">
+        <div>
+          <p class="eyebrow">MANUEL DU BERCEAU</p>
+          <h2>Comment jouer</h2>
+        </div>
+        <button class="secondary-button help-play">Commencer</button>
+      </div>
+      <div class="help-grid">
+        <article><span>01</span><h3>Choisis deux origines</h3><p>Combine n’importe quels personnages, y compris des héritiers de ta propre dynastie. Les statistiques, éléments, silhouettes et faiblesses sont transmis.</p></article>
+        <article><span>02</span><h3>Façonne l’éducation</h3><p>Choisis un mentor, une discipline et un événement fondateur. Une même paire peut ainsi produire plusieurs enfants très différents.</p></article>
+        <article><span>03</span><h3>Maîtrise la fusion</h3><p>Déplace-toi avec ZQSD ou WASD, vise à la souris, attaque au clic et utilise les pouvoirs parentaux avec A/Q et E. R déclenche la capacité fusionnée.</p></article>
+        <article><span>04</span><h3>Survis aux Fractures</h3><p>Traverse trois royaumes, élimine les vagues, choisis des améliorations en montant de niveau et bats le Progéniteur.</p></article>
+        <article><span>05</span><h3>Bâtis une dynastie</h3><p>Victoire ou défaite, l’héritier est archivé. Une victoire lui confère le statut de Légende et davantage d’Essence dynastique.</p></article>
+        <article><span>06</span><h3>Joue hors connexion</h3><p>Après une première ouverture via un petit serveur local ou un hébergement, le jeu peut être installé comme application web et conserve la sauvegarde dans le navigateur.</p></article>
+      </div>
+      <div class="controls-table">
+        <div><kbd>ZQSD</kbd><span>Déplacement</span></div><div><kbd>SOURIS</kbd><span>Visée</span></div><div><kbd>CLIC</kbd><span>Attaque de base</span></div><div><kbd>1</kbd><span>Pouvoir A</span></div><div><kbd>2</kbd><span>Pouvoir B</span></div><div><kbd>R</kbd><span>Fusion</span></div><div><kbd>ESPACE</kbd><span>Esquive</span></div><div><kbd>ÉCHAP</kbd><span>Pause</span></div>
+      </div>
+    </section>
+  </template>
+
+  <script defer src="src/data.js"></script>
+  <script defer src="src/utils.js"></script>
+  <script defer src="src/storage.js"></script>
+  <script defer src="src/audio.js"></script>
+  <script defer src="src/render.js"></script>
+  <script defer src="src/fusion.js"></script>
+  <script defer src="src/arena.js"></script>
+  <script defer src="src/main.js"></script>
+</body>
+</html>

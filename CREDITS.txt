@@ -1,0 +1,7 @@
+SON OF A…! — Legacy Forge
+Version 1.0
+
+Concept, code, personnages, interface, effets visuels et univers créés pour ce projet.
+Les personnages et décors sont dessinés procéduralement en Canvas 2D.
+Les effets sonores sont synthétisés en temps réel avec Web Audio.
+Aucune image, musique ou ressource sous licence tierce n’est requise.

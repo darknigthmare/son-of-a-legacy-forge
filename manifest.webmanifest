@@ -1,0 +1,14 @@
+{
+  "name": "SON OF A…! — Legacy Forge",
+  "short_name": "Legacy Forge",
+  "description": "Choisissez deux origines, forgez leur héritier et combattez à travers les Fractures.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070812",
+  "theme_color": "#080914",
+  "orientation": "landscape",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
