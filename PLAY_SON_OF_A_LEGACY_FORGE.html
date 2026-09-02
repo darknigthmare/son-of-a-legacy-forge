@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#080914" />
   <meta name="description" content="SON OF A…! Legacy Forge — Choisissez deux origines, forgez leur héritier et combattez à travers les Fractures." />
-  <title>SON OF A…! — Legacy Forge</title>
+<title>SON OF A…! — Legacy Forge</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20x2%3D%221%22%3E%3Cstop%20stop-color%3D%22%239e7bff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2345f3d0%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22116%22%20fill%3D%22%23080914%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22256%22%20r%3D%22176%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%2222%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M164%20178h184l-92%2082%2092%2076H164l92-76z%22%20fill%3D%22url(%23g)%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22256%22%20r%3D%2226%22%20fill%3D%22%23fff%22%2F%3E%0A%3C%2Fsvg%3E%0A" type="image/svg+xml" />
   <style>
 :root {
   --bg: #070812;
@@ -16,7 +17,7 @@
   --line-bright: rgba(190, 203, 255, 0.36);
   --text: #f7f7ff;
   --muted: #a8abc4;
-  --dim: #71758e;
+  --dim: #969ab4;
   --accent: #9e7bff;
   --accent-2: #45f3d0;
   --danger: #ff5c82;
@@ -32,9 +33,12 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-body); }
 body { min-height: 100vh; overflow-x: hidden; }
-button, input { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { color: inherit; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, .file-label:focus-within, #gameCanvas:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
+.skip-link { position: fixed; z-index: 1000; top: 8px; left: 8px; padding: 10px 14px; border-radius: 9px; background: #fff; color: #090a14; transform: translateY(-150%); }
+.skip-link:focus { transform: translateY(0); }
+.visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
 .app-shell { min-height: 100vh; position: relative; display: grid; grid-template-rows: 78px minmax(0, 1fr) 35px; overflow: hidden; background:
   radial-gradient(circle at 20% 0%, rgba(100, 70, 255, 0.17), transparent 34%),
@@ -81,9 +85,11 @@ h1,h2,h3 { font-family: var(--font-display); }
 .ghost-button, .file-label { background: rgba(255,255,255,.045); border: 1px solid var(--line); color: var(--muted); }
 .ghost-button:hover, .file-label:hover { background: rgba(255,255,255,.09); color: var(--text); border-color: var(--line-bright); }
 .primary-button:disabled, .secondary-button:disabled { opacity: .36; cursor: not-allowed; transform: none; filter: none; box-shadow: none; }
+.ghost-button:disabled { opacity: .42; cursor: not-allowed; }
 .text-button { background: none; color: var(--muted); padding: 0; font-size: 12px; }
 .text-button:hover { color: var(--accent-2); }
-.file-label input { display: none; }
+.file-label { position: relative; }
+.file-label input { position: absolute; width: 1px; height: 1px; opacity: 0; inset: auto; }
 
 /* Menu */
 .menu-screen { min-height: calc(100vh - 147px); max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, .9fr) minmax(520px, 1.1fr); align-items: center; gap: clamp(20px, 4vw, 80px); }
@@ -134,6 +140,7 @@ h1,h2,h3 { font-family: var(--font-display); }
 .origin-card-info { padding: 9px 10px 11px; border-top: 1px solid var(--line); }
 .origin-card-info strong { display: block; font: 600 13px var(--font-display); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
 .origin-card-info span { display: block; margin-top: 3px; color: var(--dim); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
+.origin-card-build { display: block; margin-top: 6px; color: var(--muted); font-size: 8px; line-height: 1.35; white-space: normal; text-transform: none; letter-spacing: 0; }
 .card-generation { position: absolute; top: 8px; right: 8px; min-width: 24px; height: 24px; border-radius: 8px; background: rgba(0,0,0,.5); border: 1px solid var(--line); display: grid; place-items: center; color: var(--accent-2); font: 600 8px var(--font-display); }
 .fusion-tip { margin: 13px 0 0; text-align: center; color: var(--dim); font-size: 11px; }
 
@@ -242,6 +249,7 @@ h1,h2,h3 { font-family: var(--font-display); }
 .touch-actions button:nth-child(3) { left: 0; bottom: 14px; }
 .touch-actions button:nth-child(4) { left: 64px; bottom: 0; }
 .touch-actions button:nth-child(5) { right: 10px; top: 0; }
+.rotate-device-hint { display: none; }
 
 /* Results */
 .results-screen { min-height: calc(100vh - 147px); max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; }
@@ -283,6 +291,34 @@ h1,h2,h3 { font-family: var(--font-display); }
 .detail-title { color:var(--accent-2); font-size:11px; }
 .detail-parents { margin:13px 0; color:var(--muted); font-size:10px; }
 .detail-actions { display:grid; gap:7px; margin-top:15px; }
+
+/* Legacy progression */
+.legacy-screen { max-width: 1280px; margin: 0 auto; }
+.legacy-balance { min-width: 180px; padding: 15px 18px; border: 1px solid rgba(69,243,208,.3); border-radius: 14px; background: rgba(69,243,208,.06); color: #d7fff8; text-align: right; }
+.legacy-balance small { display:block; color:var(--dim); font-size:9px; letter-spacing:.1em; }
+.legacy-balance strong { display:block; margin-top:4px; font:600 24px var(--font-display); }
+.legacy-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.legacy-card { min-height:290px; padding:22px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.018)); box-shadow:var(--shadow); display:flex; flex-direction:column; }
+.legacy-icon { width:54px; height:54px; display:grid; place-items:center; border-radius:16px; background:rgba(158,123,255,.14); color:var(--accent); font-size:24px; }
+.legacy-card h3 { margin:20px 0 7px; font-size:23px; }
+.legacy-card p { color:var(--muted); line-height:1.55; font-size:12px; }
+.legacy-ranks { display:flex; gap:6px; margin:10px 0 18px; }
+.legacy-ranks span { flex:1; height:7px; border-radius:999px; background:rgba(255,255,255,.08); }
+.legacy-ranks span.active { background:linear-gradient(90deg,var(--accent),var(--accent-2)); box-shadow:0 0 12px rgba(69,243,208,.24); }
+.legacy-card button { margin-top:auto; width:100%; }
+.legacy-note { margin-top:16px; padding:15px; border:1px solid var(--line); border-radius:13px; color:var(--muted); font-size:12px; text-align:center; }
+
+/* Settings / onboarding */
+.settings-grid { display:grid; gap:10px; margin-top:16px; }
+.setting-row { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:13px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.025); }
+.setting-row span { display:grid; gap:3px; }
+.setting-row small { color:var(--muted); }
+.setting-row select { min-height:38px; border:1px solid var(--line-bright); border-radius:9px; background:#11152a; color:var(--text); padding:0 10px; }
+.toggle-button[aria-pressed="true"] { border-color:var(--accent-2); color:#d9fff8; background:rgba(69,243,208,.12); }
+.onboarding-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:18px 0; }
+.onboarding-step { padding:14px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.03); }
+.onboarding-step strong { display:block; color:var(--accent-2); margin-bottom:6px; }
+.onboarding-step span { color:var(--muted); font-size:11px; line-height:1.45; }
 
 /* Help */
 .help-screen { max-width: 1450px; margin: 0 auto; }
@@ -344,6 +380,7 @@ kbd { padding:5px 7px; border:1px solid var(--line-bright); border-bottom-width:
   .dynasty-details { min-height:300px; }
   .controls-table { grid-template-columns:repeat(2,1fr); }
   .controls-hint { display:none; }
+  .legacy-grid { grid-template-columns:1fr; }
 }
 
 @media (max-width: 620px) {
@@ -375,9 +412,43 @@ kbd { padding:5px 7px; border:1px solid var(--line-bright); border-bottom-width:
   .score-box, .combo-box { display:none; }
   .hud-vitals { width:200px; }
   .ability-chip { width:52px; height:52px; border-radius:12px; }
-  .mobile-controls { display:block !important; }
-  .ability-dock { display:none; }
   .result-stats { grid-template-columns:repeat(2,1fr); }
+  .onboarding-steps { grid-template-columns:1fr; }
+}
+
+@media (pointer: coarse), (hover: none) {
+  .mobile-controls { display:block !important; }
+  .ability-dock, .controls-hint { display:none; }
+  #gameCanvas, .touch-stick, .touch-actions, .touch-actions button { touch-action:none; }
+  .game-frame { max-height:calc(100dvh - 115px); }
+  .touch-actions button { min-width:54px; min-height:54px; }
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .rotate-device-hint { display:block; position:absolute; left:50%; bottom:7px; transform:translateX(-50%); padding:6px 10px; border-radius:999px; background:rgba(5,6,14,.82); color:var(--muted); font:600 8px var(--font-display); white-space:nowrap; }
+}
+
+html.high-contrast {
+  --muted:#d5d7e8;
+  --dim:#b9bdd3;
+  --line:rgba(230,234,255,.34);
+  --line-bright:rgba(255,255,255,.7);
+}
+
+html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::after {
+  animation-duration:.001ms !important;
+  animation-iteration-count:1 !important;
+  scroll-behavior:auto !important;
+  transition-duration:.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    scroll-behavior:auto !important;
+    transition-duration:.001ms !important;
+  }
 }
 
 body.forging::after {
@@ -390,6 +461,7 @@ body.forging::after {
 </style>
 </head>
 <body>
+  <a class="skip-link" href="#screenRoot">Aller au contenu</a>
   <div id="app" class="app-shell">
     <div class="ambient ambient-a"></div>
     <div class="ambient ambient-b"></div>
@@ -414,12 +486,12 @@ body.forging::after {
 
     <footer class="footer-bar">
       <span id="statusText">BERCEAU ZÉRO — EN ATTENTE</span>
-      <span class="footer-version">ÉDITION NAVIGATEUR 1.0</span>
+      <span class="footer-version">ÉDITION NAVIGATEUR 1.1</span>
     </footer>
   </div>
 
   <div id="toastLayer" class="toast-layer" aria-live="assertive"></div>
-  <div id="modalLayer" class="modal-layer hidden" role="dialog" aria-modal="true"></div>
+  <div id="modalLayer" class="modal-layer hidden" role="dialog" aria-modal="true" tabindex="-1"></div>
 
   <template id="menuTemplate">
     <section class="menu-screen screen-enter">
@@ -432,9 +504,12 @@ body.forging::after {
           <button class="secondary-button menu-continue">Continuer la dynastie</button>
           <button class="ghost-button menu-lab">Laboratoire libre</button>
           <button class="ghost-button menu-dynasty">Arbre généalogique</button>
+          <button class="ghost-button menu-legacy">Héritage du Berceau</button>
         </div>
         <div class="menu-meta">
           <button class="text-button menu-help">Comment jouer</button>
+          <span>•</span>
+          <button class="text-button menu-settings">Réglages et accessibilité</button>
           <span>•</span>
           <button class="text-button menu-reset">Réinitialiser la sauvegarde</button>
         </div>
@@ -581,6 +656,7 @@ body.forging::after {
               <button data-action="dash">↯</button>
             </div>
           </div>
+          <div class="rotate-device-hint" aria-hidden="true">Tourne l’écran pour une arène plus lisible</div>
         </div>
       </div>
     </section>
@@ -634,10 +710,10 @@ body.forging::after {
       <div class="help-grid">
         <article><span>01</span><h3>Choisis deux origines</h3><p>Combine n’importe quels personnages, y compris des héritiers de ta propre dynastie. Les statistiques, éléments, silhouettes et faiblesses sont transmis.</p></article>
         <article><span>02</span><h3>Façonne l’éducation</h3><p>Choisis un mentor, une discipline et un événement fondateur. Une même paire peut ainsi produire plusieurs enfants très différents.</p></article>
-        <article><span>03</span><h3>Maîtrise la fusion</h3><p>Déplace-toi avec ZQSD ou WASD, vise à la souris, attaque au clic et utilise les pouvoirs parentaux avec A/Q et E. R déclenche la capacité fusionnée.</p></article>
+        <article><span>03</span><h3>Maîtrise la fusion</h3><p>Déplace-toi avec ZQSD ou WASD, vise à la souris, attaque au clic et utilise les pouvoirs parentaux avec 1 et 2. R déclenche la capacité fusionnée.</p></article>
         <article><span>04</span><h3>Survis aux Fractures</h3><p>Traverse trois royaumes, élimine les vagues, choisis des améliorations en montant de niveau et bats le Progéniteur.</p></article>
         <article><span>05</span><h3>Bâtis une dynastie</h3><p>Victoire ou défaite, l’héritier est archivé. Une victoire lui confère le statut de Légende et davantage d’Essence dynastique.</p></article>
-        <article><span>06</span><h3>Joue hors connexion</h3><p>Après une première ouverture via un petit serveur local ou un hébergement, le jeu peut être installé comme application web et conserve la sauvegarde dans le navigateur.</p></article>
+        <article><span>06</span><h3>Reprends sans perdre ta lignée</h3><p>La mission est sécurisée au début de chaque vague. Après une fermeture ou une perte de connexion, Continuer reprend au dernier point sûr.</p></article>
       </div>
       <div class="controls-table">
         <div><kbd>ZQSD</kbd><span>Déplacement</span></div><div><kbd>SOURIS</kbd><span>Visée</span></div><div><kbd>CLIC</kbd><span>Attaque de base</span></div><div><kbd>1</kbd><span>Pouvoir A</span></div><div><kbd>2</kbd><span>Pouvoir B</span></div><div><kbd>R</kbd><span>Fusion</span></div><div><kbd>ESPACE</kbd><span>Esquive</span></div><div><kbd>ÉCHAP</kbd><span>Pause</span></div>
@@ -645,11 +721,26 @@ body.forging::after {
     </section>
   </template>
 
+  <template id="legacyTemplate">
+    <section class="legacy-screen screen-enter">
+      <div class="section-heading compact-heading">
+        <div>
+          <p class="eyebrow">MÉTA-PROGRESSION — HÉRITAGE DU BERCEAU</p>
+          <h2>Stabilise toute la dynastie</h2>
+          <p>Investis l’Essence gagnée en campagne. Chaque amélioration s’applique à toutes les missions futures.</p>
+        </div>
+        <div class="legacy-balance"></div>
+      </div>
+      <div class="legacy-grid"></div>
+      <div class="legacy-note">Le Laboratoire libre ne rapporte pas d’Essence et n’altère pas les archives : utilise-le pour tester une combinaison sans risque.</div>
+    </section>
+  </template>
+
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
 
-  LF.VERSION = '1.0.0';
+  LF.VERSION = '1.1.0';
 
   LF.ELEMENTS = {
     fire:     { name: 'Feu',       color: '#ff6b4a', dark: '#7d2637', symbol: '▲', verb: 'embrase' },
@@ -806,9 +897,9 @@ body.forging::after {
     'fire+ice': { name: 'Cendre Polaire', title: 'L’Héritier de la Vapeur Blanche', ability: 'Cataclysme de vapeur', desc: 'Une détonation thermique aveugle, brûle et gèle les survivants.', phrase: 'PARADOX' },
     'fire+water': { name: 'Marée Magmatique', title: 'Le Sang des Océans Rouges', ability: 'Tsunami volcanique', desc: 'Une vague de lave liquide traverse l’arène et laisse des geysers.', phrase: 'VOLCANO' },
     'fire+nature': { name: 'Floraison Cendrée', title: 'Le Jardinier des Flammes', ability: 'Forêt de braises', desc: 'Des racines ardentes emprisonnent les ennemis et rendent de la santé.', phrase: 'WILDFIRE' },
-    'fire+electric': { name: 'Plasma Royal', title: 'L’Héritier du Soleil Fracturé', ability: 'Couronne de plasma', desc: 'Déclenche une tempête de feu électrique autour du porteur.', phrase: 'STORM' },
+    'electric+fire': { name: 'Plasma Royal', title: 'L’Héritier du Soleil Fracturé', ability: 'Couronne de plasma', desc: 'Déclenche une tempête de feu électrique autour du porteur.', phrase: 'STORM' },
     'fire+time': { name: 'Dernière Étincelle', title: 'Celui Qui Brûle Demain', ability: 'Supernova différée', desc: 'Marque les ennemis ; l’explosion se répète quelques secondes plus tard.', phrase: 'FUTURE' },
-    'shadow+electric': { name: 'Éclair Noir', title: 'Le Fantôme de la Haute Tension', ability: 'Réseau du néant', desc: 'Téléporte entre les cibles en laissant un arc électrique.', phrase: 'GLITCH' },
+    'electric+shadow': { name: 'Éclair Noir', title: 'Le Fantôme de la Haute Tension', ability: 'Réseau du néant', desc: 'Téléporte entre les cibles en laissant un arc électrique.', phrase: 'GLITCH' },
     'shadow+spirit': { name: 'Veillée Sombre', title: 'L’Enfant des Noms Oubliés', ability: 'Parlement des ombres', desc: 'Invoque des doubles spectraux qui répètent les attaques.', phrase: 'GHOST' },
     'shadow+time': { name: 'Minuit Inversé', title: 'L’Héritier de l’Instant Invisible', ability: 'Vol de seconde', desc: 'Efface l’héritier du temps puis rejoue tous ses dégâts simultanément.', phrase: 'VOID' },
     'earth+electric': { name: 'Magnétar', title: 'Le Titan des Pôles Brisés', ability: 'Prison magnétique', desc: 'Attire ennemis et projectiles vers un noyau de pierre électrifié.', phrase: 'TITAN' },
@@ -818,9 +909,9 @@ body.forging::after {
     'electric+time': { name: 'Overclock', title: 'L’Erreur Plus Rapide que le Temps', ability: 'Boucle de surcharge', desc: 'Accélère tout l’héritier tandis que les ennemis restent figés.', phrase: 'GLITCH' },
     'ice+nature': { name: 'Hiver Vivant', title: 'La Graine du Dernier Gel', ability: 'Cathédrale de givre', desc: 'Fait pousser des cristaux vivants qui protègent et empalent.', phrase: 'WINTER' },
     'ice+sound': { name: 'Verre Chantant', title: 'La Cantatrice aux Mille Éclats', ability: 'Opéra de cristal', desc: 'Chaque note crée un cristal puis tous éclatent à l’unisson.', phrase: 'CRYSTAL' },
-    'nature+bio': { name: 'Évolution Sauvage', title: 'L’Héritier de la Ruche Verte', ability: 'Écosystème prédateur', desc: 'Libère des organismes qui chassent, empoisonnent et soignent.', phrase: 'CREATURE' },
-    'water+sound': { name: 'Sirène de Choc', title: 'La Voix des Fosses Insondables', ability: 'Chant de pression', desc: 'Une vague sonore liquide comprime tout sur son passage.', phrase: 'SIREN' },
-    'water+time': { name: 'Marée des Âges', title: 'Celui Qui Se Souvient des Océans', ability: 'Reflux temporel', desc: 'Rappelle ennemis et projectiles à leur position précédente.', phrase: 'AEON' },
+    'bio+nature': { name: 'Évolution Sauvage', title: 'L’Héritier de la Ruche Verte', ability: 'Écosystème prédateur', desc: 'Libère des organismes qui chassent, empoisonnent et soignent.', phrase: 'CREATURE' },
+    'sound+water': { name: 'Sirène de Choc', title: 'La Voix des Fosses Insondables', ability: 'Chant de pression', desc: 'Une vague sonore liquide comprime tout sur son passage.', phrase: 'SIREN' },
+    'time+water': { name: 'Marée des Âges', title: 'Celui Qui Se Souvient des Océans', ability: 'Reflux temporel', desc: 'Rappelle ennemis et projectiles à leur position précédente.', phrase: 'AEON' },
     'spirit+time': { name: 'Ancêtre Futur', title: 'L’Héritier de Toutes les Vies', ability: 'Conseil des possibles', desc: 'Invoque plusieurs versions temporelles de l’héritier.', phrase: 'LEGEND' },
     'beast+bio': { name: 'Apex-9', title: 'Le Prédateur que la Nature Refusa', ability: 'Mue terminale', desc: 'Se transforme temporairement en chasseur bio-mécanique incontrôlable.', phrase: 'MONSTER' },
     'beast+sound': { name: 'Hurlement Royal', title: 'La Gorge de la Chasse Éternelle', ability: 'Cri d’extinction', desc: 'Un rugissement marque les proies puis déclenche une charge.', phrase: 'BEAST' }
@@ -879,6 +970,12 @@ body.forging::after {
     { id: 'blast', icon: '✺', name: 'Mort explosive', desc: 'Les ennemis éliminés explosent.', apply: g => { g.player.deathBlast += 18; } }
   ];
 
+  LF.LEGACY_UPGRADES = [
+    { id: 'vitality', name: 'Patrimoine endurant', maxRank: 5, baseCost: 70, icon: '♥', desc: '+4 % de points de vie maximum par rang.' },
+    { id: 'power', name: 'Noyau dominant', maxRank: 5, baseCost: 85, icon: '▲', desc: '+3 % de dégâts par rang.' },
+    { id: 'resonance', name: 'Résonance dynastique', maxRank: 5, baseCost: 100, icon: '◆', desc: '+5 % d’Essence gagnée par rang.' }
+  ];
+
   LF.ENEMY_ARCHETYPES = {
     crawler: { name: 'Rejet rampant', radius: 15, hp: 28, speed: 94, damage: 8, xp: 8, color: '#ff6381', behavior: 'melee' },
     brute: { name: 'Masse stérile', radius: 27, hp: 105, speed: 45, damage: 17, xp: 19, color: '#d98a62', behavior: 'melee' },
@@ -888,7 +985,7 @@ body.forging::after {
   };
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
@@ -1013,136 +1110,1072 @@ body.forging::after {
   };
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
-  const KEY = 'son-of-a-legacy-forge-save-v1';
 
-  const makeDefault = () => ({
-    version: LF.VERSION || '1.0.0',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    essence: 0,
-    dynasty: [],
-    activeDraft: null,
-    settings: { sound: true, reducedMotion: false },
-    statistics: {
-      runs: 0, victories: 0, defeats: 0, totalKills: 0, bestScore: 0,
-      highestGeneration: 0, mutationsFound: [], bossesDefeated: []
-    }
+  const LIMITS = Object.freeze({
+    schemaVersion: 2,
+    maxImportBytes: 4_000_000,
+    maxSaveBytes: 4_000_000,
+    maxHeirBytes: 256_000,
+    maxActiveRunBytes: 750_000,
+    maxDynasty: 300,
+    maxRunHistory: 30,
+    maxQuarantine: 50,
+    maxGenericArray: 500,
+    maxGenericKeys: 100,
+    maxGenericDepth: 8
   });
 
+  const ELEMENTS = Object.freeze([
+    'fire', 'shadow', 'earth', 'electric', 'ice', 'nature',
+    'water', 'sound', 'spirit', 'time', 'beast', 'bio'
+  ]);
+  const ELEMENT_SET = new Set(ELEMENTS);
+  const MUTATIONS = new Set(['third-strand', 'giant-gene', 'phase-skin', 'twin-core', 'unstable-crown', 'ancestral-return']);
+  const MUTATION_EFFECTS = new Set(['thirdElement', 'giant', 'phase', 'echo', 'overload', 'ancestor']);
+  const DISCIPLINES = new Set(['warrior', 'mystic', 'engineer', 'trickster']);
+  const EVENTS = new Set(['rescue', 'betrayal', 'exile', 'triumph']);
+  const MENTORS = new Set(['parentA', 'parentB', 'zero']);
+  const QUALITIES = new Set(['auto', 'low', 'medium', 'high']);
+  const RARITIES = new Set(['ANOMALIE', 'HÉRITAGE LÉGENDAIRE', 'HÉRITAGE ANCIEN', 'DYNASTIQUE', 'HYBRIDE STABLE']);
+  const VISUAL_ENUMS = Object.freeze({
+    body: new Set(['athletic', 'slim', 'massive', 'android', 'regal', 'organic', 'fluid', 'performer', 'spectral', 'monk', 'feral', 'insect']),
+    head: new Set(['human', 'golem', 'visor', 'alien', 'skull', 'masked', 'beast', 'mantis']),
+    hair: new Set(['none', 'flame', 'long', 'antenna', 'crystal', 'leaves', 'tendrils', 'wave', 'mist', 'mane']),
+    wings: new Set(['none', 'veil', 'thrusters', 'ice', 'petal', 'fin', 'speaker', 'ghost', 'clock', 'insect']),
+    tail: new Set(['none', 'ember', 'stone', 'cable', 'vine', 'tentacle', 'wisp', 'ribbon', 'beast', 'stinger']),
+    armor: new Set(['heavy', 'light', 'crag', 'tech', 'robe', 'bark', 'scale', 'stage', 'ceremonial', 'cloth', 'hide', 'carapace']),
+    aura: new Set(['none', 'sparks', 'shadow', 'dust', 'electric', 'snow', 'pollen', 'bubbles', 'rings', 'souls', 'clock', 'claws', 'spores'])
+  });
+  const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,95}$/;
+  const SAFE_KEY = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
+  const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+  const GENETIC_CODE = /^SOA1-[A-Za-z0-9+/_=-]+$/;
+
+  class ValidationError extends Error {
+    constructor(message, path = 'value') {
+      super(`${path}: ${message}`);
+      this.name = 'ValidationError';
+      this.path = path;
+    }
+  }
+
+  function fail(path, message) { throw new ValidationError(message, path); }
+  function isPlainObject(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  }
+  function requireObject(value, path) {
+    if (!isPlainObject(value)) fail(path, 'objet attendu');
+    return value;
+  }
+  function byteLength(text) {
+    if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(String(text)).length;
+    return String(text).length * 2;
+  }
+  function jsonSize(value, path) {
+    let text;
+    try { text = JSON.stringify(value); }
+    catch { fail(path, 'objet non sérialisable'); }
+    if (typeof text !== 'string') fail(path, 'objet non sérialisable');
+    return byteLength(text);
+  }
+  function assertTextSize(text, maxBytes, path = 'text') {
+    if (typeof text !== 'string') fail(path, 'texte attendu');
+    if (byteLength(text) > maxBytes) fail(path, `taille maximale dépassée (${maxBytes} octets)`);
+    return text;
+  }
+  function assertObjectSize(value, maxBytes, path) {
+    if (jsonSize(value, path) > maxBytes) fail(path, `taille maximale dépassée (${maxBytes} octets)`);
+  }
+  function cleanString(value, options = {}) {
+    const { path = 'value', max = 160, required = false, fallback = '', pattern = null } = options;
+    if (typeof value !== 'string') {
+      if (required) fail(path, 'chaîne attendue');
+      return fallback;
+    }
+    const cleaned = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').replace(/[<>]/g, '').trim();
+    if (required && !cleaned) fail(path, 'chaîne vide');
+    if (cleaned.length > max) fail(path, `chaîne trop longue (maximum ${max})`);
+    if (pattern && cleaned && !pattern.test(cleaned)) fail(path, 'format invalide');
+    return cleaned || fallback;
+  }
+  function safeId(value, path, required = true) {
+    return cleanString(value, { path, max: 96, required, fallback: '', pattern: SAFE_ID });
+  }
+  function finiteNumber(value, options = {}) {
+    const { path = 'value', min = -1e12, max = 1e12, integer = false, required = true, fallback = 0 } = options;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      if (required) fail(path, 'nombre fini attendu');
+      return fallback;
+    }
+    if (value < min || value > max) fail(path, `nombre hors limites [${min}, ${max}]`);
+    return integer ? Math.round(value) : value;
+  }
+  function recoverNumber(value, options, issues, fallback = 0) {
+    try { return finiteNumber(value, options); }
+    catch (error) {
+      issues.push({ path: options.path || 'number', reason: `${error.message} Valeur par défaut restaurée.` });
+      return fallback;
+    }
+  }
+  function booleanValue(value, fallback = false) { return typeof value === 'boolean' ? value : fallback; }
+  function enumValue(value, allowed, path, options = {}) {
+    const { required = true, fallback = null } = options;
+    if (typeof value === 'string' && allowed.has(value)) return value;
+    if (required) fail(path, 'valeur non reconnue');
+    return fallback;
+  }
+  function color(value, path, fallback = null) {
+    if (typeof value !== 'string' || !HEX_COLOR.test(value)) {
+      if (fallback !== null) return fallback;
+      fail(path, 'couleur hexadécimale invalide');
+    }
+    let normalized = value.toLowerCase();
+    if (normalized.length === 4) normalized = `#${normalized.slice(1).split('').map(char => char + char).join('')}`;
+    return normalized;
+  }
+  function isoDate(value, path, fallback = null) {
+    if (typeof value === 'string') {
+      const time = Date.parse(value);
+      if (Number.isFinite(time)) {
+        const year = new Date(time).getUTCFullYear();
+        if (year >= 2000 && year <= 2200) return new Date(time).toISOString();
+      }
+    }
+    if (fallback !== null) return fallback;
+    fail(path, 'date ISO invalide');
+  }
+  function stringList(value, options = {}) {
+    const { path = 'list', maxItems = 50, maxLength = 96, ids = false } = options;
+    if (!Array.isArray(value)) return [];
+    const output = [];
+    for (let index = 0; index < value.length && output.length < maxItems; index++) {
+      try {
+        const item = ids ? safeId(value[index], `${path}[${index}]`) : cleanString(value[index], { path: `${path}[${index}]`, max: maxLength, required: true });
+        if (!output.includes(item)) output.push(item);
+      } catch {}
+    }
+    return output;
+  }
+
+  function sanitizeStats(value, path = 'stats') {
+    requireObject(value, path);
+    const output = {};
+    for (const key of ['vitality', 'power', 'speed', 'control']) {
+      output[key] = finiteNumber(value[key], { path: `${path}.${key}`, min: 2, max: 13, integer: true });
+    }
+    return output;
+  }
+  function sanitizeStatModifiers(value, path) {
+    if (!isPlainObject(value)) return {};
+    const output = {};
+    for (const key of ['vitality', 'power', 'speed', 'control']) {
+      if (value[key] !== undefined) output[key] = finiteNumber(value[key], { path: `${path}.${key}`, min: -3, max: 3, integer: true });
+    }
+    return output;
+  }
+  function sanitizeColors(value, path = 'colors') {
+    if (!Array.isArray(value) || value.length < 3) fail(path, 'trois couleurs attendues');
+    return [0, 1, 2].map(index => color(value[index], `${path}[${index}]`));
+  }
+  function sanitizeVisual(value, path = 'visual') {
+    requireObject(value, path);
+    const output = {};
+    for (const key of ['body', 'head', 'hair', 'wings', 'tail', 'armor', 'aura']) {
+      output[key] = enumValue(value[key] ?? 'none', VISUAL_ENUMS[key], `${path}.${key}`);
+    }
+    output.horns = finiteNumber(value.horns ?? 0, { path: `${path}.horns`, min: 0, max: 2, integer: true });
+    return output;
+  }
+  function sanitizeNamedDescription(value, path) {
+    requireObject(value, path);
+    return {
+      name: cleanString(value.name, { path: `${path}.name`, max: 120, required: true }),
+      desc: cleanString(value.desc, { path: `${path}.desc`, max: 600, required: true })
+    };
+  }
+  function sanitizeMutation(value, path = 'mutation') {
+    if (value == null) return null;
+    requireObject(value, path);
+    const mutation = {
+      id: enumValue(value.id, MUTATIONS, `${path}.id`),
+      name: cleanString(value.name, { path: `${path}.name`, max: 100, required: true }),
+      desc: cleanString(value.desc, { path: `${path}.desc`, max: 500, required: true }),
+      color: color(value.color, `${path}.color`),
+      chance: finiteNumber(value.chance ?? 1, { path: `${path}.chance`, min: 0, max: 10, required: false, fallback: 1 }),
+      stat: sanitizeStatModifiers(value.stat, `${path}.stat`),
+      effect: enumValue(value.effect, MUTATION_EFFECTS, `${path}.effect`)
+    };
+    if (value.thirdElement != null) mutation.thirdElement = enumValue(value.thirdElement, ELEMENT_SET, `${path}.thirdElement`);
+    return mutation;
+  }
+  function sanitizeAbility(value, path, fusion = false) {
+    requireObject(value, path);
+    const ability = {
+      name: cleanString(value.name, { path: `${path}.name`, max: 140, required: true }),
+      desc: cleanString(value.desc, { path: `${path}.desc`, max: 700, required: true })
+    };
+    if (fusion) {
+      if (!Array.isArray(value.elements) || !value.elements.length || value.elements.length > 3) fail(`${path}.elements`, 'un à trois éléments attendus');
+      ability.elements = value.elements.map((entry, index) => enumValue(entry, ELEMENT_SET, `${path}.elements[${index}]`));
+    } else {
+      ability.element = enumValue(value.element, ELEMENT_SET, `${path}.element`);
+    }
+    if (value.icon != null) ability.icon = cleanString(value.icon, { path: `${path}.icon`, max: 12 });
+    return ability;
+  }
+  function sanitizeParentRef(value, path) {
+    requireObject(value, path);
+    return {
+      id: safeId(value.id, `${path}.id`),
+      name: cleanString(value.name, { path: `${path}.name`, max: 80, required: true }),
+      generation: finiteNumber(value.generation ?? 0, { path: `${path}.generation`, min: 0, max: 10_000, integer: true })
+    };
+  }
+  function sanitizeEducation(value, path = 'education') {
+    requireObject(value, path);
+    return {
+      mentor: enumValue(value.mentor, MENTORS, `${path}.mentor`),
+      mentorName: cleanString(value.mentorName, { path: `${path}.mentorName`, max: 120, required: true }),
+      discipline: enumValue(value.discipline, DISCIPLINES, `${path}.discipline`),
+      disciplineName: cleanString(value.disciplineName, { path: `${path}.disciplineName`, max: 120, required: true }),
+      event: enumValue(value.event, EVENTS, `${path}.event`),
+      eventName: cleanString(value.eventName, { path: `${path}.eventName`, max: 140, required: true }),
+      trait: cleanString(value.trait, { path: `${path}.trait`, max: 80, required: true })
+    };
+  }
+  function sanitizeCombat(value, path = 'combat') {
+    requireObject(value, path);
+    return {
+      projectileSpeed: finiteNumber(value.projectileSpeed ?? 1, { path: `${path}.projectileSpeed`, min: .25, max: 4 }),
+      dashCooldown: finiteNumber(value.dashCooldown ?? 0, { path: `${path}.dashCooldown`, min: -1, max: 5 }),
+      fusionCooldown: finiteNumber(value.fusionCooldown ?? 0, { path: `${path}.fusionCooldown`, min: -10, max: 30 }),
+      crit: finiteNumber(value.crit ?? 0, { path: `${path}.crit`, min: 0, max: 1 }),
+      healBonus: finiteNumber(value.healBonus ?? 1, { path: `${path}.healBonus`, min: .1, max: 5 }),
+      statusResist: finiteNumber(value.statusResist ?? 0, { path: `${path}.statusResist`, min: 0, max: 1 }),
+      comboWindow: finiteNumber(value.comboWindow ?? 1, { path: `${path}.comboWindow`, min: .25, max: 5 }),
+      mentorSource: enumValue(value.mentorSource ?? 'Z', new Set(['A', 'B', 'Z']), `${path}.mentorSource`)
+    };
+  }
+  function sanitizeRunResult(value, options = {}) {
+    const path = options.path || 'runResult';
+    requireObject(value, path);
+    if (typeof value.victory !== 'boolean') fail(`${path}.victory`, 'booléen attendu');
+    const output = {
+      victory: value.victory,
+      score: finiteNumber(value.score ?? 0, { path: `${path}.score`, min: 0, max: 1e12, integer: true }),
+      kills: finiteNumber(value.kills ?? 0, { path: `${path}.kills`, min: 0, max: 1e7, integer: true }),
+      damage: finiteNumber(value.damage ?? 0, { path: `${path}.damage`, min: 0, max: 1e15, integer: true }),
+      damageTaken: finiteNumber(value.damageTaken ?? 0, { path: `${path}.damageTaken`, min: 0, max: 1e15, integer: true }),
+      maxCombo: finiteNumber(value.maxCombo ?? 0, { path: `${path}.maxCombo`, min: 0, max: 1e7, integer: true }),
+      level: finiteNumber(value.level ?? 1, { path: `${path}.level`, min: 1, max: 10_000, integer: true }),
+      time: finiteNumber(value.time ?? 0, { path: `${path}.time`, min: 0, max: 31_536_000 }),
+      realm: finiteNumber(value.realm ?? 0, { path: `${path}.realm`, min: 0, max: 99, integer: true }),
+      wave: finiteNumber(value.wave ?? 0, { path: `${path}.wave`, min: 0, max: 999, integer: true }),
+      bosses: stringList(value.bosses, { path: `${path}.bosses`, maxItems: 50, maxLength: 120 }),
+      essence: finiteNumber(value.essence ?? 0, { path: `${path}.essence`, min: 0, max: 1e9, integer: true }),
+      accuracy: Math.min(100, finiteNumber(value.accuracy ?? 0, { path: `${path}.accuracy`, min: 0, max: 1_000_000, integer: true })),
+      recordedAt: isoDate(value.recordedAt, `${path}.recordedAt`, new Date().toISOString())
+    };
+    if (value.runId != null) output.runId = safeId(value.runId, `${path}.runId`);
+    return output;
+  }
+  function sanitizeRunHistory(value, path = 'runHistory', issues = null) {
+    if (!Array.isArray(value)) return [];
+    if (value.length > LIMITS.maxRunHistory && issues) {
+      issues.push({ path, reason: `${value.length - LIMITS.maxRunHistory} anciens résultats écartés par la limite de ${LIMITS.maxRunHistory}.` });
+    }
+    const output = [];
+    for (const [index, entry] of value.slice(-LIMITS.maxRunHistory).entries()) {
+      try { output.push(sanitizeRunResult(entry, { path: `${path}[${index}]` })); }
+      catch (error) {
+        if (!issues) throw error;
+        issues.push({ path: `${path}[${index}]`, reason: error.message });
+      }
+    }
+    return output;
+  }
+
+  function sanitizeHeir(value, options = {}) {
+    const path = options.path || 'heir';
+    requireObject(value, path);
+    assertObjectSize(value, LIMITS.maxHeirBytes, path);
+    const now = new Date().toISOString();
+    const parents = requireObject(value.parents, `${path}.parents`);
+    const abilities = requireObject(value.abilities, `${path}.abilities`);
+    const passive = sanitizeNamedDescription(value.passive, `${path}.passive`);
+    const weakness = sanitizeNamedDescription(value.weakness, `${path}.weakness`);
+    const output = {
+      id: safeId(value.id, `${path}.id`),
+      kind: enumValue(value.kind, new Set(['heir']), `${path}.kind`),
+      generation: finiteNumber(value.generation, { path: `${path}.generation`, min: 1, max: 10_000, integer: true }),
+      seed: cleanString(value.seed, { path: `${path}.seed`, max: 12, required: true, pattern: /^[A-Z0-9_-]+$/ }),
+      createdAt: isoDate(value.createdAt, `${path}.createdAt`, now),
+      updatedAt: isoDate(value.updatedAt, `${path}.updatedAt`, isoDate(value.createdAt, `${path}.createdAt`, now)),
+      name: cleanString(value.name, { path: `${path}.name`, max: 80, required: true }),
+      title: cleanString(value.title, { path: `${path}.title`, max: 180, required: true }),
+      lineageName: cleanString(value.lineageName, { path: `${path}.lineageName`, max: 140, required: true }),
+      phrase: cleanString(value.phrase, { path: `${path}.phrase`, max: 40, required: true }),
+      element: enumValue(value.element, ELEMENT_SET, `${path}.element`),
+      secondaryElement: enumValue(value.secondaryElement, ELEMENT_SET, `${path}.secondaryElement`),
+      thirdElement: value.thirdElement == null ? null : enumValue(value.thirdElement, ELEMENT_SET, `${path}.thirdElement`),
+      stats: sanitizeStats(value.stats, `${path}.stats`),
+      colors: sanitizeColors(value.colors, `${path}.colors`),
+      visual: sanitizeVisual(value.visual, `${path}.visual`),
+      mutation: sanitizeMutation(value.mutation, `${path}.mutation`),
+      parents: {
+        a: sanitizeParentRef(parents.a, `${path}.parents.a`),
+        b: sanitizeParentRef(parents.b, `${path}.parents.b`)
+      },
+      education: sanitizeEducation(value.education, `${path}.education`),
+      abilities: {
+        basic: sanitizeAbility(abilities.basic, `${path}.abilities.basic`),
+        parentA: sanitizeAbility(abilities.parentA, `${path}.abilities.parentA`),
+        parentB: sanitizeAbility(abilities.parentB, `${path}.abilities.parentB`),
+        fusion: sanitizeAbility(abilities.fusion, `${path}.abilities.fusion`, true)
+      },
+      passive,
+      weakness,
+      combat: sanitizeCombat(value.combat, `${path}.combat`),
+      rarity: enumValue(value.rarity, RARITIES, `${path}.rarity`),
+      rarityColor: color(value.rarityColor, `${path}.rarityColor`),
+      legend: booleanValue(value.legend),
+      victories: finiteNumber(value.victories ?? 0, { path: `${path}.victories`, min: 0, max: 1e7, integer: true }),
+      defeats: finiteNumber(value.defeats ?? 0, { path: `${path}.defeats`, min: 0, max: 1e7, integer: true }),
+      bestScore: finiteNumber(value.bestScore ?? 0, { path: `${path}.bestScore`, min: 0, max: 1e12, integer: true }),
+      runHistory: sanitizeRunHistory(value.runHistory, `${path}.runHistory`, options.issues || null)
+    };
+    if (value.code != null && value.code !== '') {
+      output.code = cleanString(value.code, { path: `${path}.code`, max: 250_000, required: true, pattern: GENETIC_CODE });
+    }
+    return output;
+  }
+
+  function sanitizeParent(value, options = {}) {
+    const path = options.path || 'parent';
+    if (value == null) return null;
+    requireObject(value, path);
+    const output = {
+      id: safeId(value.id, `${path}.id`),
+      kind: enumValue(value.kind, new Set(['origin', 'heir']), `${path}.kind`),
+      generation: finiteNumber(value.generation ?? 0, { path: `${path}.generation`, min: 0, max: 10_000, integer: true }),
+      name: cleanString(value.name, { path: `${path}.name`, max: 80, required: true }),
+      title: cleanString(value.title, { path: `${path}.title`, max: 180, required: true }),
+      role: cleanString(value.role, { path: `${path}.role`, max: 120, required: true }),
+      element: enumValue(value.element, ELEMENT_SET, `${path}.element`),
+      secondaryElement: value.secondaryElement == null ? null : enumValue(value.secondaryElement, ELEMENT_SET, `${path}.secondaryElement`),
+      stats: sanitizeStats(value.stats, `${path}.stats`),
+      colors: sanitizeColors(value.colors, `${path}.colors`),
+      visual: sanitizeVisual(value.visual, `${path}.visual`),
+      mutation: sanitizeMutation(value.mutation, `${path}.mutation`),
+      ability: sanitizeAbility({ ...value.ability, element: value.ability?.element ?? value.element }, `${path}.ability`),
+      passive: sanitizeNamedDescription(value.passive, `${path}.passive`),
+      weakness: sanitizeNamedDescription(value.weakness, `${path}.weakness`),
+      lore: cleanString(value.lore, { path: `${path}.lore`, max: 1_000, required: true }),
+      legend: booleanValue(value.legend)
+    };
+    if (value.sourceChildId != null) output.sourceChildId = safeId(value.sourceChildId, `${path}.sourceChildId`);
+    return output;
+  }
+
+  function sanitizeDraft(value, options = {}) {
+    const path = options.path || 'activeDraft';
+    if (value == null) return null;
+    requireObject(value, path);
+    const education = isPlainObject(value.education) ? value.education : {};
+    const mode = enumValue(value.mode ?? 'campaign', new Set(['campaign', 'lab']), `${path}.mode`);
+    const parentA = sanitizeParent(value.parentA, { path: `${path}.parentA` });
+    const parentB = sanitizeParent(value.parentB, { path: `${path}.parentB` });
+    const child = value.child == null ? null : sanitizeHeir(value.child, { path: `${path}.child` });
+    const inferredStep = child ? 'reveal' : parentA && parentB ? 'education' : 'fusion';
+    return {
+      mode,
+      step: enumValue(value.step ?? inferredStep, new Set(['fusion', 'education', 'reveal', 'game']), `${path}.step`),
+      parentA,
+      parentB,
+      education: {
+        mentor: education.mentor == null ? null : enumValue(education.mentor, MENTORS, `${path}.education.mentor`),
+        discipline: education.discipline == null ? null : enumValue(education.discipline, DISCIPLINES, `${path}.education.discipline`),
+        event: education.event == null ? null : enumValue(education.event, EVENTS, `${path}.education.event`)
+      },
+      seed: cleanString(value.seed ?? 'GENESIS', { path: `${path}.seed`, max: 12, required: true, pattern: /^[A-Z0-9_-]+$/ }),
+      child,
+      updatedAt: isoDate(value.updatedAt, `${path}.updatedAt`, new Date().toISOString())
+    };
+  }
+
+  function sanitizeGeneric(value, path = 'value', depth = 0) {
+    if (depth > LIMITS.maxGenericDepth) fail(path, 'profondeur maximale dépassée');
+    if (value == null || typeof value === 'boolean') return value;
+    if (typeof value === 'number') return finiteNumber(value, { path, min: -1e12, max: 1e12 });
+    if (typeof value === 'string') return cleanString(value, { path, max: 512 });
+    if (Array.isArray(value)) {
+      if (value.length > LIMITS.maxGenericArray) fail(path, 'tableau trop long');
+      return value.map((entry, index) => sanitizeGeneric(entry, `${path}[${index}]`, depth + 1));
+    }
+    requireObject(value, path);
+    const keys = Object.keys(value);
+    if (keys.length > LIMITS.maxGenericKeys) fail(path, 'trop de propriétés');
+    const output = {};
+    for (const key of keys) {
+      if (!SAFE_KEY.test(key) || ['__proto__', 'prototype', 'constructor'].includes(key)) fail(`${path}.${key}`, 'clé interdite');
+      output[key] = sanitizeGeneric(value[key], `${path}.${key}`, depth + 1);
+    }
+    return output;
+  }
+  function sanitizeActiveRun(value, options = {}) {
+    const path = options.path || 'activeRun';
+    if (value == null) return null;
+    requireObject(value, path);
+    assertObjectSize(value, LIMITS.maxActiveRunBytes, path);
+    const playerSource = requireObject(value.player, `${path}.player`);
+    const statsSource = requireObject(value.stats, `${path}.stats`);
+    const cooldownSource = requireObject(playerSource.cooldowns, `${path}.player.cooldowns`);
+    const number = (source, key, min, max, integer = false) => finiteNumber(source[key], {
+      path: `${path}.${source === playerSource ? 'player.' : source === statsSource ? 'stats.' : 'player.cooldowns.'}${key}`,
+      min, max, integer
+    });
+    const maxHp = number(playerSource, 'maxHp', 1, 1e9);
+    const player = {
+      x: number(playerSource, 'x', 0, 10_000),
+      y: number(playerSource, 'y', 0, 10_000),
+      maxHp,
+      hp: Math.min(maxHp, number(playerSource, 'hp', 0, 1e9)),
+      speed: number(playerSource, 'speed', 1, 10_000),
+      damage: number(playerSource, 'damage', 0, 1e12),
+      damageMult: number(playerSource, 'damageMult', .01, 1_000),
+      fireRate: number(playerSource, 'fireRate', .03, 60),
+      projectileSpeed: number(playerSource, 'projectileSpeed', 1, 100_000),
+      projectileCount: number(playerSource, 'projectileCount', 1, 10, true),
+      pierce: number(playerSource, 'pierce', 0, 100, true),
+      critChance: number(playerSource, 'critChance', 0, 1),
+      critMult: number(playerSource, 'critMult', 1, 100),
+      magnet: number(playerSource, 'magnet', 0, 100_000),
+      regen: number(playerSource, 'regen', 0, 1e6),
+      lifeSteal: number(playerSource, 'lifeSteal', 0, 1),
+      auraDamage: number(playerSource, 'auraDamage', 0, 1e9),
+      deathBlast: number(playerSource, 'deathBlast', 0, 1e9),
+      shieldTimer: number(playerSource, 'shieldTimer', 0, 1e9),
+      dashCooldownBase: number(playerSource, 'dashCooldownBase', .1, 86_400),
+      dashCooldown: number(playerSource, 'dashCooldown', 0, 86_400),
+      abilityCooldownMult: number(playerSource, 'abilityCooldownMult', .05, 100),
+      fusionCooldownMult: number(playerSource, 'fusionCooldownMult', .05, 100),
+      statusResist: number(playerSource, 'statusResist', 0, 1),
+      healBonus: number(playerSource, 'healBonus', 0, 100),
+      comboWindow: number(playerSource, 'comboWindow', .1, 100),
+      level: number(playerSource, 'level', 1, 10_000, true),
+      xp: number(playerSource, 'xp', 0, 1e12),
+      xpNext: number(playerSource, 'xpNext', 1, 1e12),
+      fusionDamageMult: number(playerSource, 'fusionDamageMult', 0, 100),
+      shieldEnabled: booleanValue(playerSource.shieldEnabled),
+      shieldReady: booleanValue(playerSource.shieldReady),
+      cooldowns: {
+        a: number(cooldownSource, 'a', 0, 86_400),
+        b: number(cooldownSource, 'b', 0, 86_400),
+        fusion: number(cooldownSource, 'fusion', 0, 86_400)
+      }
+    };
+    if (playerSource.phaseChance !== undefined) player.phaseChance = number(playerSource, 'phaseChance', 0, 1);
+    if (playerSource.echoChance !== undefined) player.echoChance = number(playerSource, 'echoChance', 0, 1);
+    const stats = {
+      kills: number(statsSource, 'kills', 0, 1e7, true),
+      damage: number(statsSource, 'damage', 0, 1e15),
+      damageTaken: number(statsSource, 'damageTaken', 0, 1e15),
+      score: number(statsSource, 'score', 0, 1e12),
+      maxCombo: number(statsSource, 'maxCombo', 0, 1e7, true),
+      bosses: stringList(statsSource.bosses, { path: `${path}.stats.bosses`, maxItems: 50, maxLength: 120 }),
+      shots: number(statsSource, 'shots', 0, 1e9, true),
+      hits: number(statsSource, 'hits', 0, 1e9, true)
+    };
+    const output = {
+      version: finiteNumber(value.version ?? 1, { path: `${path}.version`, min: 1, max: 1, integer: true }),
+      reason: enumValue(value.reason ?? 'manual', new Set(['realm-entry', 'wave-start', 'manual']), `${path}.reason`),
+      childId: safeId(value.childId, `${path}.childId`),
+      realmIndex: finiteNumber(value.realmIndex ?? 0, { path: `${path}.realmIndex`, min: 0, max: 99, integer: true }),
+      wave: finiteNumber(value.wave ?? 0, { path: `${path}.wave`, min: 0, max: 999, integer: true }),
+      player,
+      stats,
+      runTime: finiteNumber(value.runTime ?? 0, { path: `${path}.runTime`, min: 0, max: 31_536_000 }),
+      combo: finiteNumber(value.combo ?? 0, { path: `${path}.combo`, min: 0, max: 1e7, integer: true }),
+      comboTimer: finiteNumber(value.comboTimer ?? 0, { path: `${path}.comboTimer`, min: 0, max: 100_000 })
+    };
+    output.id = value.id == null ? `run_${Date.now().toString(36)}` : safeId(value.id, `${path}.id`);
+    output.status = enumValue(value.status ?? 'active', new Set(['active', 'paused', 'checkpoint']), `${path}.status`);
+    if (value.child != null) output.child = sanitizeHeir(value.child, { path: `${path}.child` });
+    if (value.draft != null) output.draft = sanitizeDraft(value.draft, { path: `${path}.draft` });
+    output.startedAt = isoDate(value.startedAt, `${path}.startedAt`, new Date().toISOString());
+    output.updatedAt = isoDate(value.updatedAt, `${path}.updatedAt`, new Date().toISOString());
+    return output;
+  }
+
+  function sanitizeSettings(value, issues) {
+    if (!isPlainObject(value)) {
+      if (value != null) issues.push({ path: 'settings', reason: 'Paramètres invalides remplacés par les valeurs par défaut.' });
+      value = {};
+    }
+    for (const [key, fallback] of [['sound', true], ['reducedMotion', false], ['highContrast', false]]) {
+      if (value[key] !== undefined && typeof value[key] !== 'boolean') {
+        issues.push({ path: `settings.${key}`, reason: `Booléen invalide remplacé par ${fallback}.` });
+      }
+    }
+    if (value.quality !== undefined && !QUALITIES.has(value.quality)) {
+      issues.push({ path: 'settings.quality', reason: 'Qualité invalide remplacée par auto.' });
+    }
+    return {
+      sound: booleanValue(value.sound, true),
+      reducedMotion: booleanValue(value.reducedMotion, false),
+      highContrast: booleanValue(value.highContrast, false),
+      quality: enumValue(value.quality ?? 'auto', QUALITIES, 'settings.quality', { required: false, fallback: 'auto' })
+    };
+  }
+  function sanitizeStatistics(value, issues) {
+    if (!isPlainObject(value)) {
+      if (value != null) issues.push({ path: 'statistics', reason: 'Statistiques invalides remplacées.' });
+      value = {};
+    }
+    return {
+      runs: recoverNumber(value.runs ?? 0, { path: 'statistics.runs', min: 0, max: 1e9, integer: true }, issues),
+      victories: recoverNumber(value.victories ?? 0, { path: 'statistics.victories', min: 0, max: 1e9, integer: true }, issues),
+      defeats: recoverNumber(value.defeats ?? 0, { path: 'statistics.defeats', min: 0, max: 1e9, integer: true }, issues),
+      totalKills: recoverNumber(value.totalKills ?? 0, { path: 'statistics.totalKills', min: 0, max: 1e12, integer: true }, issues),
+      bestScore: recoverNumber(value.bestScore ?? 0, { path: 'statistics.bestScore', min: 0, max: 1e12, integer: true }, issues),
+      highestGeneration: recoverNumber(value.highestGeneration ?? 0, { path: 'statistics.highestGeneration', min: 0, max: 10_000, integer: true }, issues),
+      mutationsFound: stringList(value.mutationsFound, { path: 'statistics.mutationsFound', maxItems: 100, ids: true }),
+      bossesDefeated: stringList(value.bossesDefeated, { path: 'statistics.bossesDefeated', maxItems: 100, maxLength: 120 })
+    };
+  }
+  function sanitizeProgression(value, issues) {
+    if (!isPlainObject(value)) {
+      if (value != null) issues.push({ path: 'progression', reason: 'Progression invalide remplacée.' });
+      value = {};
+    }
+    const rawLegacy = isPlainObject(value.legacy) ? value.legacy : isPlainObject(value.legacies) ? value.legacies : {};
+    const legacy = {};
+    for (const [id, rank] of Object.entries(rawLegacy).slice(0, 100)) {
+      if (!SAFE_ID.test(id)) continue;
+      try { legacy[id] = finiteNumber(rank, { path: `progression.legacy.${id}`, min: 0, max: 100, integer: true }); }
+      catch (error) { issues.push({ path: `progression.legacy.${id}`, reason: `${error.message} Entrée écartée.` }); }
+    }
+    const tutorialSeen = booleanValue(value.tutorialSeen, booleanValue(value.onboardingComplete, false));
+    return {
+      legacy,
+      totalEssenceSpent: recoverNumber(value.totalEssenceSpent ?? 0, { path: 'progression.totalEssenceSpent', min: 0, max: 1e12, integer: true }, issues),
+      tutorialSeen,
+      onboardingComplete: tutorialSeen,
+      tutorialStep: recoverNumber(value.tutorialStep ?? 0, { path: 'progression.tutorialStep', min: 0, max: 100, integer: true }, issues),
+      unlockedOrigins: stringList(value.unlockedOrigins, { path: 'progression.unlockedOrigins', maxItems: 100, ids: true }),
+      unlockedFeatures: stringList(value.unlockedFeatures, { path: 'progression.unlockedFeatures', maxItems: 100, ids: true })
+    };
+  }
+  function quarantineEntry(value = {}) {
+    return {
+      at: isoDate(value.at, 'quarantine.at', new Date().toISOString()),
+      source: cleanString(value.source ?? 'validation', { path: 'quarantine.source', max: 32, fallback: 'validation' }),
+      path: cleanString(value.path ?? 'unknown', { path: 'quarantine.path', max: 160, fallback: 'unknown' }),
+      reason: cleanString(value.reason ?? 'Entrée invalide.', { path: 'quarantine.reason', max: 500, fallback: 'Entrée invalide.' }),
+      ref: cleanString(value.ref ?? '', { path: 'quarantine.ref', max: 120 })
+    };
+  }
+  function sanitizeQuarantine(value) {
+    if (!Array.isArray(value)) return [];
+    const output = [];
+    for (const entry of value.slice(-LIMITS.maxQuarantine)) {
+      try { output.push(quarantineEntry(entry)); } catch {}
+    }
+    return output;
+  }
+
+  function sanitizeSave(value, options = {}) {
+    const source = options.source || 'load';
+    requireObject(value, 'save');
+    if (value.schemaVersion !== undefined) {
+      const incomingSchema = finiteNumber(value.schemaVersion, { path: 'save.schemaVersion', min: 1, max: Number.MAX_SAFE_INTEGER, integer: true });
+      if (incomingSchema > LIMITS.schemaVersion) {
+        fail('save.schemaVersion', `version ${incomingSchema} plus récente que la version prise en charge (${LIMITS.schemaVersion})`);
+      }
+    }
+    const issues = [];
+    if (options.requireDynasty && !Array.isArray(value.dynasty)) fail('save.dynasty', 'tableau requis');
+    const rawDynasty = Array.isArray(value.dynasty) ? value.dynasty : [];
+    if (!Array.isArray(value.dynasty) && value.dynasty != null) issues.push({ path: 'dynasty', reason: 'Dynastie invalide remplacée.' });
+    const candidates = rawDynasty.slice(-LIMITS.maxDynasty);
+    if (rawDynasty.length > LIMITS.maxDynasty) issues.push({ path: 'dynasty', reason: `${rawDynasty.length - LIMITS.maxDynasty} entrées anciennes écartées par la limite de ${LIMITS.maxDynasty}.` });
+    const dynasty = [];
+    const ids = new Set();
+    for (let index = 0; index < candidates.length; index++) {
+      try {
+        const heir = sanitizeHeir(candidates[index], { path: `dynasty[${index}]`, issues });
+        if (ids.has(heir.id)) {
+          issues.push({ path: `dynasty[${index}]`, reason: 'Identifiant dupliqué écarté.', ref: heir.id });
+          continue;
+        }
+        ids.add(heir.id);
+        dynasty.push(heir);
+      } catch (error) {
+        issues.push({ path: `dynasty[${index}]`, reason: error.message, ref: isPlainObject(candidates[index]) && typeof candidates[index].id === 'string' ? candidates[index].id.slice(0, 96) : '' });
+      }
+    }
+    let activeDraft = null;
+    try { activeDraft = sanitizeDraft(value.activeDraft, { path: 'activeDraft' }); }
+    catch (error) { issues.push({ path: 'activeDraft', reason: error.message }); }
+    let activeRun = null;
+    try { activeRun = sanitizeActiveRun(value.activeRun, { path: 'activeRun' }); }
+    catch (error) { issues.push({ path: 'activeRun', reason: error.message }); }
+    const now = new Date().toISOString();
+    const statistics = sanitizeStatistics(value.statistics, issues);
+    for (const heir of dynasty) {
+      statistics.highestGeneration = Math.max(statistics.highestGeneration, heir.generation);
+      if (heir.mutation?.id && !statistics.mutationsFound.includes(heir.mutation.id)) statistics.mutationsFound.push(heir.mutation.id);
+    }
+    const settings = sanitizeSettings(value.settings, issues);
+    const progression = sanitizeProgression(value.progression, issues);
+    const revision = recoverNumber(value.revision ?? 0, { path: 'save.revision', min: 0, max: Number.MAX_SAFE_INTEGER - 1, integer: true }, issues);
+    const essence = recoverNumber(value.essence ?? 0, { path: 'save.essence', min: 0, max: 1e12, integer: true }, issues);
+    const quarantine = sanitizeQuarantine(value.quarantine);
+    for (const issue of issues) quarantine.push(quarantineEntry({ ...issue, source }));
+    const data = {
+      version: cleanString(value.version ?? LF.VERSION ?? '1.0.0', { path: 'save.version', max: 32, fallback: LF.VERSION || '1.0.0' }),
+      schemaVersion: LIMITS.schemaVersion,
+      createdAt: isoDate(value.createdAt, 'save.createdAt', now),
+      updatedAt: isoDate(value.updatedAt, 'save.updatedAt', now),
+      revision,
+      essence,
+      dynasty,
+      activeDraft,
+      activeRun,
+      settings,
+      statistics,
+      progression,
+      quarantine: quarantine.slice(-LIMITS.maxQuarantine)
+    };
+    return { data, issues };
+  }
+
+  const Validation = LF.validation = {
+    LIMITS,
+    ValidationError,
+    isPlainObject,
+    byteLength,
+    assertTextSize,
+    sanitizeHeir,
+    sanitizeParent,
+    sanitizeDraft,
+    sanitizeActiveRun,
+    sanitizeRunResult,
+    sanitizeSave,
+    quarantineEntry,
+    trySanitizeHeir(value, options) {
+      try { return { ok: true, value: sanitizeHeir(value, options), error: null }; }
+      catch (error) { return { ok: false, value: null, error }; }
+    }
+  };
+})();
+
+</script>
+  <script>
+(function () {
+  const LF = window.LF = window.LF || {};
+  const V = LF.validation;
+  if (!V) throw new Error('LF.validation doit être chargé avant src/storage.js.');
+
+  const KEY = 'son-of-a-legacy-forge-save-v1';
+  const MAX_SAFE_REVISION = Number.MAX_SAFE_INTEGER - 1;
+  const now = () => new Date().toISOString();
+  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
+  const makeRunId = () => LF.utils?.randomId?.('run') || `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+  function defaultRaw() {
+    const timestamp = now();
+    return {
+      version: LF.VERSION || '1.0.0',
+      schemaVersion: V.LIMITS.schemaVersion,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      revision: 0,
+      essence: 0,
+      dynasty: [],
+      activeDraft: null,
+      activeRun: null,
+      settings: { sound: true, reducedMotion: false, highContrast: false, quality: 'auto' },
+      statistics: {
+        runs: 0, victories: 0, defeats: 0, totalKills: 0, bestScore: 0,
+        highestGeneration: 0, mutationsFound: [], bossesDefeated: []
+      },
+      progression: {
+        legacy: {}, totalEssenceSpent: 0, tutorialSeen: false, onboardingComplete: false,
+        tutorialStep: 0, unlockedOrigins: [], unlockedFeatures: []
+      },
+      quarantine: []
+    };
+  }
+
+  function makeDefault() {
+    return V.sanitizeSave(defaultRaw(), { source: 'default' }).data;
+  }
+
+  function normalizeError(error, fallback = 'Erreur de sauvegarde inconnue.') {
+    if (error instanceof Error) return error;
+    return new Error(typeof error === 'string' ? error : fallback);
+  }
+
+  function sanitizeResult(result, runId = null) {
+    const candidate = { ...result };
+    if (typeof candidate.accuracy === 'number' && Number.isFinite(candidate.accuracy)) {
+      candidate.accuracy = Math.max(0, Math.min(100, candidate.accuracy));
+    }
+    candidate.recordedAt = candidate.recordedAt || now();
+    candidate.runId = candidate.runId || runId || makeRunId();
+    return V.sanitizeRunResult(candidate);
+  }
+
+  function historyKey(result) {
+    return result.runId || [result.recordedAt, result.victory, result.score, result.kills, result.time].join('|');
+  }
+
+  function mergeHistories(...histories) {
+    const seen = new Set();
+    const merged = [];
+    for (const history of histories) {
+      for (const result of history || []) {
+        const key = historyKey(result);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        merged.push(result);
+      }
+    }
+    return merged.slice(-V.LIMITS.maxRunHistory);
+  }
+
+  function mergeHeirs(existing, incoming, runResult = null) {
+    const previous = existing || null;
+    let history = mergeHistories(previous?.runHistory, incoming.runHistory);
+    let resultAdded = false;
+    if (runResult && !history.some(entry => historyKey(entry) === historyKey(runResult))) {
+      history = mergeHistories(history, [runResult]);
+      resultAdded = true;
+    }
+    const merged = {
+      ...(previous || {}),
+      ...incoming,
+      createdAt: previous?.createdAt || incoming.createdAt || now(),
+      updatedAt: now(),
+      runHistory: history,
+      bestScore: Math.max(previous?.bestScore || 0, incoming.bestScore || 0, runResult?.score || 0),
+      victories: Math.max(previous?.victories || 0, incoming.victories || 0) + (resultAdded && runResult?.victory ? 1 : 0),
+      defeats: Math.max(previous?.defeats || 0, incoming.defeats || 0) + (resultAdded && runResult && !runResult.victory ? 1 : 0),
+      legend: Boolean(previous?.legend || incoming.legend || (resultAdded && runResult?.victory))
+    };
+    return { heir: V.sanitizeHeir(merged), resultAdded };
+  }
+
+  function recordHeirProgress(data, heir) {
+    data.statistics.highestGeneration = Math.max(data.statistics.highestGeneration || 0, heir.generation || 1);
+    if (heir.mutation?.id && !data.statistics.mutationsFound.includes(heir.mutation.id)) {
+      data.statistics.mutationsFound.push(heir.mutation.id);
+    }
+  }
+
+  function recordGlobalRun(data, result) {
+    const stats = data.statistics;
+    stats.runs = Math.min(1e9, stats.runs + 1);
+    stats.victories = Math.min(1e9, stats.victories + (result.victory ? 1 : 0));
+    stats.defeats = Math.min(1e9, stats.defeats + (result.victory ? 0 : 1));
+    stats.totalKills = Math.min(1e12, stats.totalKills + result.kills);
+    stats.bestScore = Math.max(stats.bestScore || 0, result.score);
+    for (const boss of result.bosses) {
+      if (!stats.bossesDefeated.includes(boss) && stats.bossesDefeated.length < 100) stats.bossesDefeated.push(boss);
+    }
+    data.essence = Math.min(1e12, data.essence + result.essence);
+  }
+
+  function appendHeir(data, heir) {
+    const index = data.dynasty.findIndex(entry => entry.id === heir.id);
+    if (index >= 0) data.dynasty[index] = heir;
+    else {
+      if (data.dynasty.length >= V.LIMITS.maxDynasty) {
+        const removed = data.dynasty.shift();
+        data.quarantine.push(V.quarantineEntry({
+          source: 'storage', path: 'dynasty', ref: removed?.id || '',
+          reason: `Entrée la plus ancienne écartée par la limite de ${V.LIMITS.maxDynasty}.`
+        }));
+      }
+      data.dynasty.push(heir);
+    }
+    recordHeirProgress(data, heir);
+  }
+
   const Storage = LF.storage = {
+    key: KEY,
     data: makeDefault(),
+    lastError: null,
+    lastLoadError: null,
+    lastWarnings: [],
+    _lastPersisted: null,
+
+    _setError(error, warning = 'Impossible d’enregistrer la sauvegarde.') {
+      this.lastError = normalizeError(error);
+      console.warn(warning, this.lastError);
+      return false;
+    },
+
+    _commit(candidate, options = {}) {
+      const rollback = clone(this._lastPersisted || this.data || makeDefault());
+      try {
+        const validation = V.sanitizeSave(candidate, { source: options.source || 'save' });
+        const next = validation.data;
+        const priorRevision = Math.max(
+          Number.isSafeInteger(rollback?.revision) ? rollback.revision : 0,
+          Number.isSafeInteger(next.revision) ? next.revision : 0
+        );
+        next.version = LF.VERSION || next.version;
+        next.updatedAt = now();
+        next.revision = Math.min(MAX_SAFE_REVISION, priorRevision + 1);
+        const serialized = JSON.stringify(next);
+        V.assertTextSize(serialized, V.LIMITS.maxSaveBytes, 'save');
+        localStorage.setItem(KEY, serialized);
+        this.data = next;
+        this._lastPersisted = clone(next);
+        this.lastError = null;
+        this.lastWarnings = validation.issues;
+        return true;
+      } catch (error) {
+        this.data = rollback;
+        return this._setError(error);
+      }
+    },
+
+    _transaction(mutator, source = 'transaction') {
+      const candidate = clone(this.data);
+      let result;
+      try { result = mutator(candidate); }
+      catch (error) { return { ok: this._setError(error, 'Mutation de sauvegarde refusée.'), result: null }; }
+      if (!this._commit(candidate, { source })) return { ok: false, result: null };
+      return { ok: true, result };
+    },
 
     load() {
-      try {
-        const raw = localStorage.getItem(KEY);
-        if (!raw) {
-          this.data = makeDefault();
-          this.save();
-          return this.data;
-        }
-        const parsed = JSON.parse(raw);
-        const defaults = makeDefault();
-        this.data = {
-          ...defaults,
-          ...parsed,
-          settings: { ...defaults.settings, ...(parsed.settings || {}) },
-          statistics: { ...defaults.statistics, ...(parsed.statistics || {}) },
-          dynasty: Array.isArray(parsed.dynasty) ? parsed.dynasty : []
-        };
-      } catch (error) {
-        console.warn('Sauvegarde illisible, création d’une nouvelle.', error);
+      this.lastError = null;
+      this.lastLoadError = null;
+      this.lastWarnings = [];
+      let raw;
+      try { raw = localStorage.getItem(KEY); }
+      catch (error) {
         this.data = makeDefault();
+        this._lastPersisted = clone(this.data);
+        this.lastLoadError = normalizeError(error);
+        this._setError(error, 'Stockage local indisponible.');
+        return this.data;
+      }
+
+      if (!raw) {
+        this.data = makeDefault();
+        this._lastPersisted = clone(this.data);
+        this._commit(this.data, { source: 'initial' });
+        return this.data;
+      }
+
+      try {
+        V.assertTextSize(raw, V.LIMITS.maxImportBytes, 'save');
+        const parsed = JSON.parse(raw);
+        const validation = V.sanitizeSave(parsed, { source: 'load' });
+        const clean = validation.data;
+        clean.version = LF.VERSION || clean.version;
+        this.data = clean;
+        this._lastPersisted = clone(clean);
+        this.lastWarnings = validation.issues;
+        if (raw !== JSON.stringify(clean)) {
+          const warnings = [...validation.issues];
+          const migrated = this._commit(clean, { source: 'migration' });
+          this.lastWarnings = warnings;
+          if (!migrated) {
+            this.data = clean;
+            this._lastPersisted = clone(clean);
+          }
+        }
+      } catch (error) {
+        this.lastLoadError = normalizeError(error);
+        const replacement = makeDefault();
+        replacement.quarantine.push(V.quarantineEntry({
+          source: 'load', path: 'save', ref: KEY,
+          reason: `Sauvegarde racine illisible : ${this.lastLoadError.message}`
+        }));
+        this.data = replacement;
+        this._lastPersisted = clone(replacement);
+        this._commit(replacement, { source: 'recovery' });
       }
       return this.data;
     },
 
     save() {
-      this.data.updatedAt = new Date().toISOString();
-      try { localStorage.setItem(KEY, JSON.stringify(this.data)); }
-      catch (error) { console.warn('Impossible d’enregistrer la sauvegarde.', error); }
-      return this.data;
+      return this._commit(this.data, { source: 'save' });
     },
 
     reset() {
-      this.data = makeDefault();
-      this.save();
-      return this.data;
+      return this._commit(makeDefault(), { source: 'reset' });
     },
 
     setDraft(draft) {
-      this.data.activeDraft = draft ? LF.utils.deepClone(draft) : null;
-      this.save();
+      if (draft == null) return this.clearDraft();
+      let sanitized;
+      try { sanitized = V.sanitizeDraft(draft); sanitized.updatedAt = now(); }
+      catch (error) { return this._setError(error, 'Draft invalide refusé.'); }
+      return this._transaction(data => { data.activeDraft = sanitized; }, 'setDraft').ok;
     },
 
     clearDraft() {
-      this.data.activeDraft = null;
-      this.save();
+      return this._transaction(data => { data.activeDraft = null; }, 'clearDraft').ok;
+    },
+
+    setActiveRun(activeRun) {
+      if (activeRun == null) return this.clearActiveRun();
+      let sanitized;
+      try {
+        const candidate = { ...activeRun };
+        const previous = this.data.activeRun;
+        if (previous && previous.childId === candidate.childId) {
+          candidate.id = candidate.id || previous.id;
+          candidate.startedAt = candidate.startedAt || previous.startedAt;
+        }
+        candidate.updatedAt = now();
+        sanitized = V.sanitizeActiveRun(candidate);
+      }
+      catch (error) { return this._setError(error, 'Checkpoint de mission invalide refusé.'); }
+      return this._transaction(data => { data.activeRun = sanitized; }, 'setActiveRun').ok;
+    },
+
+    clearActiveRun() {
+      return this._transaction(data => { data.activeRun = null; }, 'clearActiveRun').ok;
+    },
+
+    clearRunAndDraft() {
+      return this._transaction(data => {
+        data.activeRun = null;
+        data.activeDraft = null;
+      }, 'clearRunAndDraft').ok;
     },
 
     addOrUpdateHeir(child, runResult = null) {
-      const copy = LF.utils.deepClone(child);
-      const existingIndex = this.data.dynasty.findIndex(entry => entry.id === copy.id);
-      copy.updatedAt = new Date().toISOString();
-      copy.createdAt = copy.createdAt || copy.updatedAt;
-      if (runResult) {
-        copy.runHistory = copy.runHistory || [];
-        copy.runHistory.push({ ...runResult, recordedAt: new Date().toISOString() });
-        copy.bestScore = Math.max(copy.bestScore || 0, runResult.score || 0);
-        copy.victories = (copy.victories || 0) + (runResult.victory ? 1 : 0);
-        copy.defeats = (copy.defeats || 0) + (runResult.victory ? 0 : 1);
-        copy.legend = Boolean(copy.legend || runResult.victory);
+      let incoming;
+      let result = null;
+      try {
+        incoming = V.sanitizeHeir(child);
+        if (runResult) result = sanitizeResult(runResult);
+      } catch (error) {
+        this._setError(error, 'Héritier ou résultat invalide refusé.');
+        return null;
       }
-      if (existingIndex >= 0) this.data.dynasty[existingIndex] = { ...this.data.dynasty[existingIndex], ...copy };
-      else this.data.dynasty.push(copy);
-      this.data.statistics.highestGeneration = Math.max(this.data.statistics.highestGeneration || 0, copy.generation || 1);
-      if (copy.mutation?.id && !this.data.statistics.mutationsFound.includes(copy.mutation.id)) this.data.statistics.mutationsFound.push(copy.mutation.id);
-      this.save();
-      return copy;
+      const transaction = this._transaction(data => {
+        const existing = data.dynasty.find(entry => entry.id === incoming.id) || null;
+        const merged = mergeHeirs(existing, incoming, result);
+        appendHeir(data, merged.heir);
+        return merged.heir;
+      }, 'addOrUpdateHeir');
+      return transaction.ok ? transaction.result : null;
     },
 
     removeHeir(id) {
-      this.data.dynasty = this.data.dynasty.filter(entry => entry.id !== id);
-      this.save();
+      if (typeof id !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,95}$/.test(id)) return this._setError(new V.ValidationError('identifiant invalide', 'id'));
+      return this._transaction(data => {
+        data.dynasty = data.dynasty.filter(entry => entry.id !== id);
+      }, 'removeHeir').ok;
     },
 
-    registerRun(result) {
-      const stats = this.data.statistics;
-      stats.runs += 1;
-      stats.victories += result.victory ? 1 : 0;
-      stats.defeats += result.victory ? 0 : 1;
-      stats.totalKills += result.kills || 0;
-      stats.bestScore = Math.max(stats.bestScore || 0, result.score || 0);
-      for (const boss of result.bosses || []) if (!stats.bossesDefeated.includes(boss)) stats.bossesDefeated.push(boss);
-      this.data.essence += result.essence || 0;
-      this.save();
+    registerRun(runResult) {
+      let result;
+      try { result = sanitizeResult(runResult); }
+      catch (error) { return this._setError(error, 'Résultat de mission invalide refusé.'); }
+      return this._transaction(data => { recordGlobalRun(data, result); }, 'registerRun').ok;
+    },
+
+    completeRun(child, runResult) {
+      let incoming;
+      let result;
+      try {
+        incoming = V.sanitizeHeir(child);
+        if (this.data.activeRun && this.data.activeRun.childId !== incoming.id) {
+          throw new V.ValidationError('le checkpoint actif appartient à un autre héritier', 'activeRun.childId');
+        }
+        result = sanitizeResult(runResult, this.data.activeRun?.id || null);
+      } catch (error) {
+        this._setError(error, 'Mission terminée avec des données invalides.');
+        return null;
+      }
+      const transaction = this._transaction(data => {
+        const existing = data.dynasty.find(entry => entry.id === incoming.id) || null;
+        const merged = mergeHeirs(existing, incoming, result);
+        appendHeir(data, merged.heir);
+        if (merged.resultAdded) recordGlobalRun(data, result);
+        data.activeDraft = null;
+        data.activeRun = null;
+        return merged.heir;
+      }, 'completeRun');
+      return transaction.ok ? transaction.result : null;
     },
 
     spendEssence(amount) {
-      if (this.data.essence < amount) return false;
-      this.data.essence -= amount;
-      this.save();
-      return true;
+      if (!Number.isInteger(amount) || amount <= 0 || amount > 1e9) {
+        return this._setError(new V.ValidationError('montant entier positif attendu', 'amount'));
+      }
+      if (this.data.essence < amount) { this.lastError = null; return false; }
+      return this._transaction(data => { data.essence -= amount; }, 'spendEssence').ok;
+    },
+
+    purchaseLegacy(id, cost, maxRank = 1) {
+      if (typeof id !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,95}$/.test(id)) {
+        this._setError(new V.ValidationError('identifiant invalide', 'legacy.id'));
+        return false;
+      }
+      if (!Number.isInteger(cost) || cost < 0 || cost > 1e9 || !Number.isInteger(maxRank) || maxRank < 1 || maxRank > 100) {
+        this._setError(new V.ValidationError('coût ou rang maximal invalide', 'legacy'));
+        return false;
+      }
+      const currentRank = this.data.progression.legacy[id] || 0;
+      if (currentRank >= maxRank || this.data.essence < cost) { this.lastError = null; return false; }
+      const transaction = this._transaction(data => {
+        const rank = (data.progression.legacy[id] || 0) + 1;
+        data.progression.legacy[id] = rank;
+        data.progression.totalEssenceSpent = Math.min(1e12, data.progression.totalEssenceSpent + cost);
+        data.essence -= cost;
+        return rank;
+      }, 'purchaseLegacy');
+      return transaction.ok ? transaction.result : false;
     },
 
     export() {
-      return JSON.stringify(this.data, null, 2);
+      try {
+        const clean = V.sanitizeSave(this.data, { source: 'export' }).data;
+        this.lastError = null;
+        return JSON.stringify(clean, null, 2);
+      } catch (error) {
+        this._setError(error, 'Export de sauvegarde impossible.');
+        throw this.lastError;
+      }
     },
 
     import(text) {
-      const parsed = JSON.parse(text);
-      if (!parsed || !Array.isArray(parsed.dynasty) || typeof parsed.settings !== 'object') throw new Error('Format de sauvegarde invalide.');
-      this.data = { ...makeDefault(), ...parsed };
-      this.save();
-      return this.data;
+      const previousWarnings = [...this.lastWarnings];
+      try {
+        V.assertTextSize(text, V.LIMITS.maxImportBytes, 'import');
+        const parsed = JSON.parse(text);
+        const validation = V.sanitizeSave(parsed, { source: 'import', requireDynasty: true });
+        if (!this._commit(validation.data, { source: 'import' })) throw this.lastError;
+        this.lastWarnings = validation.issues;
+        return this.data;
+      } catch (error) {
+        this.lastWarnings = previousWarnings;
+        this.lastError = normalizeError(error, 'Format de sauvegarde invalide.');
+        throw this.lastError;
+      }
     }
   };
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
@@ -1152,6 +2185,7 @@ body.forging::after {
       this.context = null;
       this.master = null;
       this.enabled = true;
+      this.paused = false;
       this.unlocked = false;
       this.musicNodes = [];
     }
@@ -1179,8 +2213,13 @@ body.forging::after {
     setEnabled(value) {
       this.enabled = Boolean(value);
       this.unlock();
-      if (this.master && this.context) this.master.gain.setTargetAtTime(this.enabled ? .16 : 0, this.context.currentTime, .02);
+      if (this.master && this.context) this.master.gain.setTargetAtTime(this.enabled ? (this.paused ? .035 : .16) : 0, this.context.currentTime, .02);
       if (!this.enabled) this.stopMusic();
+    }
+
+    setPaused(value) {
+      this.paused = Boolean(value);
+      if(this.master&&this.context&&this.enabled)this.master.gain.setTargetAtTime(this.paused ? .035 : .16,this.context.currentTime,.04);
     }
 
     tone(frequency, duration = .08, type = 'sine', volume = .3, slide = 0, delay = 0) {
@@ -1285,7 +2324,7 @@ body.forging::after {
   LF.audio = new AudioSystem();
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
@@ -1641,7 +2680,7 @@ body.forging::after {
   };
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
@@ -1780,6 +2819,7 @@ body.forging::after {
     const generation=Math.max(parentA.generation||0,parentB.generation||0)+1;
     const synergy=F.getSynergy(parentA,parentB);
     const mutation=makeMutation(parentA,parentB,education,rng,generation);
+    const legendCount=(parentA.legend?1:0)+(parentB.legend?1:0);
 
     const stats={};
     for(const stat of ['vitality','power','speed','control']){
@@ -1787,6 +2827,8 @@ body.forging::after {
       const variance=rng()<.28?(rng()<.5?-1:1):0;
       const sameBonus=parentA.id===parentB.id && stat===Object.entries(parentA.stats).sort((a,b)=>b[1]-a[1])[0][0]?1:0;
       stats[stat]=Math.round(average)+variance+mentorStatBonus(mentor,stat)+(discipline.mods?.[stat]||0)+(event.mods?.[stat]||0)+sameBonus+(mutation?.stat?.[stat]||0);
+      if(legendCount && stat==='control')stats[stat]+=1;
+      if(legendCount>1 && stat==='power')stats[stat]+=1;
       stats[stat]=U.clamp(stats[stat],2,13);
     }
 
@@ -1834,8 +2876,8 @@ body.forging::after {
         comboWindow:event.comboWindow||1,
         mentorSource:mentor.source
       },
-      rarity:mutation?'ANOMALIE':generation>=4?'HÉRITAGE ANCIEN':generation>=2?'DYNASTIQUE':'HYBRIDE STABLE',
-      rarityColor:mutation?.color||(generation>=4?'#ffd56c':generation>=2?'#45f3d0':'#9e7bff'),
+      rarity:mutation?'ANOMALIE':legendCount?'HÉRITAGE LÉGENDAIRE':generation>=4?'HÉRITAGE ANCIEN':generation>=2?'DYNASTIQUE':'HYBRIDE STABLE',
+      rarityColor:mutation?.color||(legendCount?'#ffe78f':generation>=4?'#ffd56c':generation>=2?'#45f3d0':'#9e7bff'),
       legend:false, victories:0, defeats:0, bestScore:0, runHistory:[]
     };
     child.code=F.encodeChild(child);
@@ -1849,10 +2891,11 @@ body.forging::after {
 
   F.decodeChild = function(code){
     const clean=String(code).trim();
+    if(clean.length>120000)throw new Error('Code génétique trop volumineux.');
     if(!clean.startsWith('SOA1-'))throw new Error('Code génétique non reconnu.');
     const payload=U.decodeData(clean.slice(5));
     if(payload?.v!==1||!payload.child?.id)throw new Error('Code génétique incomplet.');
-    const child=payload.child;
+    const child=LF.validation.sanitizeHeir(payload.child);
     child.code=clean;
     child.runHistory=child.runHistory||[];
     return child;
@@ -1878,13 +2921,20 @@ body.forging::after {
   };
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF = window.LF || {};
   const U = LF.utils;
 
   const TAU = Math.PI * 2;
+  const CHECKPOINT_VERSION = 1;
+  const CHECKPOINT_PLAYER_NUMBERS = [
+    'x','y','maxHp','hp','speed','damage','damageMult','fireRate','projectileSpeed','projectileCount','pierce',
+    'critChance','critMult','magnet','regen','lifeSteal','auraDamage','deathBlast','shieldTimer','dashCooldownBase',
+    'dashCooldown','abilityCooldownMult','fusionCooldownMult','statusResist','healBonus','comboWindow','level','xp','xpNext',
+    'phaseChance','echoChance','fusionDamageMult'
+  ];
 
   class ArenaGame {
     constructor(canvas, child, hudRoot, callbacks = {}) {
@@ -1893,6 +2943,14 @@ body.forging::after {
       this.child = child;
       this.hudRoot = hudRoot;
       this.callbacks = callbacks;
+      this.resumeState = callbacks.resumeState || null;
+      this.quality = this.resolveQuality(callbacks.quality);
+      this.effectLimits = {
+        low: { particles: 280, damageTexts: 48, auraInterval: .25 },
+        medium: { particles: 600, damageTexts: 80, auraInterval: .22 },
+        high: { particles: 1000, damageTexts: 120, auraInterval: .2 }
+      }[this.quality];
+      this.legacyRanks = this.readLegacyRanks();
       this.width = canvas.width;
       this.height = canvas.height;
       this.running = false;
@@ -1918,9 +2976,10 @@ body.forging::after {
       this.damageTexts = [];
       this.delayedActions = [];
       this.keys = new Set();
-      this.mouse = { x: this.width * .72, y: this.height * .5, down: false, active: true };
+      this.mouse = { x: this.width * .72, y: this.height * .5, down: false, active: false };
       this.touchVector = { x: 0, y: 0 };
       this.touchBasic = false;
+      this.touchKnob = null;
       this.shake = 0;
       this.flash = { color: '#ffffff', alpha: 0 };
       this.timeSlowTimer = 0;
@@ -1932,6 +2991,8 @@ body.forging::after {
       this.upgradeQueue = [];
       this.upgradeActive = false;
       this.boss = null;
+      this.endTimer = 0;
+      this.auraTickTimer = 0;
       this.boundEvents = [];
       this.decorSeed = U.hashString(child.id);
       this.setupPlayer();
@@ -1940,16 +3001,180 @@ body.forging::after {
       this.bindInput();
     }
 
+    resolveQuality(value) {
+      const requested = typeof value === 'string' ? value : value?.mode;
+      if (requested === 'low' || requested === 'medium' || requested === 'high') return requested;
+      return window.matchMedia?.('(pointer: coarse)').matches ? 'low' : 'high';
+    }
+
+    readLegacyRanks() {
+      const legacy = LF.storage?.data?.progression?.legacy || {};
+      const rank = key => {
+        const value = Number(legacy[key]);
+        return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+      };
+      return { vitality: rank('vitality'), power: rank('power'), resonance: rank('resonance') };
+    }
+
+    exportCheckpoint(reason = 'manual') {
+      const player = {};
+      for (const key of CHECKPOINT_PLAYER_NUMBERS) {
+        const value = this.player[key];
+        if (Number.isFinite(value)) player[key] = value;
+      }
+      player.shieldEnabled = Boolean(this.player.shieldEnabled);
+      player.shieldReady = Boolean(this.player.shieldReady);
+      player.cooldowns = {
+        a: Math.max(0, Number(this.player.cooldowns?.a) || 0),
+        b: Math.max(0, Number(this.player.cooldowns?.b) || 0),
+        fusion: Math.max(0, Number(this.player.cooldowns?.fusion) || 0)
+      };
+      return {
+        version: CHECKPOINT_VERSION,
+        reason,
+        childId: this.child.id,
+        realmIndex: this.realmIndex,
+        wave: this.wave,
+        player,
+        stats: {
+          kills: this.stats.kills,
+          damage: this.stats.damage,
+          damageTaken: this.stats.damageTaken,
+          score: this.stats.score,
+          maxCombo: this.stats.maxCombo,
+          bosses: [...this.stats.bosses],
+          shots: this.stats.shots,
+          hits: this.stats.hits
+        },
+        runTime: this.runTime,
+        combo: this.combo,
+        comboTimer: this.comboTimer
+      };
+    }
+
+    emitCheckpoint(reason) {
+      if (typeof this.callbacks.onCheckpoint !== 'function') return;
+      try { this.callbacks.onCheckpoint(this.exportCheckpoint(reason)); }
+      catch (error) { console.warn('Impossible d’enregistrer le checkpoint de mission.', error); }
+    }
+
+    restoreCheckpoint(rawState) {
+      if (!rawState) return false;
+      let state = rawState;
+      if (typeof state === 'string') {
+        try { state = JSON.parse(state); } catch { return false; }
+      }
+      const realmIndex = Number(state?.realmIndex);
+      const wave = Number(state?.wave);
+      const realm = LF.REALMS[realmIndex];
+      if (state?.version !== CHECKPOINT_VERSION || state.childId !== this.child.id || !realm || !Number.isInteger(wave) || wave < 0 || wave > realm.waves) return false;
+
+      const sourcePlayer = state.player || {};
+      for (const key of CHECKPOINT_PLAYER_NUMBERS) {
+        const value = Number(sourcePlayer[key]);
+        if (Number.isFinite(value)) this.player[key] = value;
+      }
+      this.player.maxHp = Math.max(1, this.player.maxHp);
+      this.player.hp = U.clamp(this.player.hp, 1, this.player.maxHp);
+      this.player.x = U.clamp(this.player.x, 34, this.width - 34);
+      this.player.y = U.clamp(this.player.y, 52, this.height - 34);
+      this.player.projectileCount = U.clamp(Math.round(this.player.projectileCount), 1, 5);
+      this.player.pierce = Math.max(0, Math.round(this.player.pierce));
+      this.player.speed = Math.max(1, this.player.speed);
+      this.player.damage = Math.max(0, this.player.damage);
+      this.player.damageMult = Math.max(.01, this.player.damageMult);
+      this.player.fireRate = Math.max(.03, this.player.fireRate);
+      this.player.projectileSpeed = Math.max(1, this.player.projectileSpeed);
+      this.player.critChance = U.clamp(this.player.critChance, 0, 1);
+      this.player.critMult = Math.max(1, this.player.critMult);
+      this.player.magnet = Math.max(0, this.player.magnet);
+      this.player.regen = Math.max(0, this.player.regen);
+      this.player.lifeSteal = Math.max(0, this.player.lifeSteal);
+      this.player.auraDamage = Math.max(0, this.player.auraDamage);
+      this.player.deathBlast = Math.max(0, this.player.deathBlast);
+      this.player.dashCooldownBase = Math.max(.1, this.player.dashCooldownBase);
+      this.player.dashCooldown = Math.max(0, this.player.dashCooldown);
+      this.player.abilityCooldownMult = Math.max(.05, this.player.abilityCooldownMult);
+      this.player.fusionCooldownMult = Math.max(.05, this.player.fusionCooldownMult);
+      this.player.statusResist = U.clamp(this.player.statusResist, 0, 1);
+      this.player.healBonus = Math.max(0, this.player.healBonus);
+      this.player.comboWindow = Math.max(.1, this.player.comboWindow);
+      if (Number.isFinite(this.player.phaseChance)) this.player.phaseChance = U.clamp(this.player.phaseChance, 0, 1);
+      if (Number.isFinite(this.player.echoChance)) this.player.echoChance = U.clamp(this.player.echoChance, 0, 1);
+      this.player.fusionDamageMult = Math.max(0, this.player.fusionDamageMult);
+      this.player.level = Math.max(1, Math.round(this.player.level));
+      this.player.xp = Math.max(0, this.player.xp);
+      this.player.xpNext = Math.max(1, this.player.xpNext);
+      this.player.shieldEnabled = Boolean(sourcePlayer.shieldEnabled);
+      this.player.shieldReady = Boolean(sourcePlayer.shieldReady);
+      this.player.cooldowns = {
+        a: Math.max(0, Number(sourcePlayer.cooldowns?.a) || 0),
+        b: Math.max(0, Number(sourcePlayer.cooldowns?.b) || 0),
+        fusion: Math.max(0, Number(sourcePlayer.cooldowns?.fusion) || 0)
+      };
+      this.player.fireTimer = 0;
+      this.player.dashTimer = 0;
+      this.player.invuln = 0;
+
+      const sourceStats = state.stats || {};
+      for (const key of ['kills','damage','damageTaken','score','maxCombo','shots','hits']) {
+        const value = Number(sourceStats[key]);
+        if (Number.isFinite(value)) this.stats[key] = Math.max(0, value);
+      }
+      this.stats.bosses = Array.isArray(sourceStats.bosses) ? sourceStats.bosses.filter(name => typeof name === 'string').slice(0, LF.REALMS.length) : [];
+      this.runTime = Math.max(0, Number(state.runTime) || 0);
+      this.combo = Math.max(0, Number(state.combo) || 0);
+      this.comboTimer = Math.max(0, Number(state.comboTimer) || 0);
+      this.realmIndex = realmIndex;
+      this.wave = wave;
+      this.waveActive = false;
+      this.waveTransition = 0;
+      this.spawnQueue.length = 0;
+      this.projectiles.length = 0;
+      this.enemyProjectiles.length = 0;
+      this.enemies.length = 0;
+      this.pickups.length = 0;
+      this.particles.length = 0;
+      this.effects.length = 0;
+      this.damageTexts.length = 0;
+      this.delayedActions.length = 0;
+      this.boss = null;
+      return true;
+    }
+
+    startRestoredCheckpoint() {
+      const targetWave = this.wave;
+      LF.audio.startMusic(this.realmIndex);
+      if (targetWave > 0) {
+        this.wave = targetWave - 1;
+        this.startWave();
+        this.announce('MISSION REPRISE', `${LF.REALMS[this.realmIndex].name} · vague ${targetWave}/4`, 2.1);
+      } else {
+        this.waveTransition = 2.9;
+        this.announce('MISSION REPRISE', LF.REALMS[this.realmIndex].subtitle, 2.1);
+        this.emitCheckpoint('realm-entry');
+      }
+    }
+
+    clearInputState() {
+      this.keys.clear();
+      this.mouse.down = false;
+      this.touchBasic = false;
+      this.touchVector.x = 0;
+      this.touchVector.y = 0;
+      if (this.touchKnob) this.touchKnob.style.transform = '';
+    }
+
     setupPlayer() {
       const stats = this.child.stats;
       const mutation = this.child.mutation?.effect;
       const sizeMult = mutation === 'giant' ? 1.25 : 1;
-      const maxHp = 72 + stats.vitality * 11 + (this.child.generation || 1) * 2;
+      const maxHp = (72 + stats.vitality * 11 + (this.child.generation || 1) * 2) * (1 + this.legacyRanks.vitality * .04);
       this.player = {
         x: this.width / 2, y: this.height * .57, radius: 19 * sizeMult,
         maxHp, hp: maxHp,
         speed: 155 + stats.speed * 9,
-        damage: 6.5 + stats.power * 2.15,
+        damage: (6.5 + stats.power * 2.15) * (1 + this.legacyRanks.power * .03),
         damageMult: 1,
         fireRate: Math.max(.16, .38 - stats.speed * .012),
         fireTimer: 0,
@@ -2042,6 +3267,7 @@ body.forging::after {
           this.callbacks.onPause?.(this);
           return;
         }
+        if (this.paused || this.ended) return;
         this.keys.add(event.code);
         if (event.repeat) return;
         if (event.code === 'Digit1' || event.code === 'Numpad1') this.castAbility('a');
@@ -2051,6 +3277,7 @@ body.forging::after {
       });
       this.bind(window, 'keyup', event => this.keys.delete(event.code));
       this.bind(this.canvas, 'pointermove', event => {
+        if (event.pointerType !== 'mouse') return;
         const rect = this.canvas.getBoundingClientRect();
         this.mouse.x = (event.clientX - rect.left) * this.width / rect.width;
         this.mouse.y = (event.clientY - rect.top) * this.height / rect.height;
@@ -2059,12 +3286,26 @@ body.forging::after {
       this.bind(this.canvas, 'pointerdown', event => {
         event.preventDefault();
         this.canvas.focus();
+        if (event.pointerType !== 'mouse') return;
+        const rect = this.canvas.getBoundingClientRect();
+        this.mouse.x = (event.clientX - rect.left) * this.width / rect.width;
+        this.mouse.y = (event.clientY - rect.top) * this.height / rect.height;
+        this.mouse.active = true;
         if (event.button === 0) this.mouse.down = true;
         if (event.button === 2) this.castAbility('a');
       });
       this.bind(window, 'pointerup', event => { if (event.button === 0) this.mouse.down = false; });
       this.bind(this.canvas, 'contextmenu', event => event.preventDefault());
       if (this.hud.pauseButton) this.bind(this.hud.pauseButton, 'click', () => this.callbacks.onPause?.(this));
+      const autoPause = () => {
+        this.clearInputState();
+        if (!this.running || this.paused || this.ended) return;
+        if (typeof this.callbacks.onPause === 'function') this.callbacks.onPause(this);
+        else this.setPaused(true, 'system');
+      };
+      this.bind(window, 'blur', autoPause);
+      this.bind(document, 'visibilitychange', () => { if (document.hidden) autoPause(); });
+      this.canvas.style.touchAction = 'none';
       this.setupTouchControls();
     }
 
@@ -2072,6 +3313,10 @@ body.forging::after {
       if (!this.hud.mobile) return;
       const stick = this.hud.mobile.querySelector('.touch-stick');
       const knob = stick?.querySelector('div');
+      const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches;
+      if (coarsePointer) this.hud.mobile.classList.remove('hidden');
+      this.hud.mobile.style.touchAction = 'none';
+      this.touchKnob = knob || null;
       let pointerId = null;
       const updateStick = event => {
         if (!stick) return;
@@ -2085,19 +3330,22 @@ body.forging::after {
         if (knob) knob.style.transform = `translate(${dx}px,${dy}px)`;
       };
       if (stick) {
-        this.bind(stick,'pointerdown',event=>{pointerId=event.pointerId;stick.setPointerCapture?.(pointerId);updateStick(event);});
+        stick.style.touchAction = 'none';
+        this.bind(stick,'pointerdown',event=>{event.preventDefault();pointerId=event.pointerId;stick.setPointerCapture?.(pointerId);updateStick(event);});
         this.bind(stick,'pointermove',event=>{if(event.pointerId===pointerId)updateStick(event);});
         const release=event=>{if(event.pointerId!==pointerId)return;pointerId=null;this.touchVector.x=0;this.touchVector.y=0;if(knob)knob.style.transform='';};
         this.bind(stick,'pointerup',release);this.bind(stick,'pointercancel',release);
       }
       this.hud.mobile.querySelectorAll('[data-action]').forEach(button => {
         const action=button.dataset.action;
+        button.style.touchAction = 'none';
         this.bind(button,'pointerdown',event=>{
           event.preventDefault();
+          button.setPointerCapture?.(event.pointerId);
           if(action==='basic')this.touchBasic=true;
-          if(action==='a')this.castAbility('a');
-          if(action==='b')this.castAbility('b');
-          if(action==='fusion')this.castFusion();
+          if(action==='a')this.castAbility('a',true);
+          if(action==='b')this.castAbility('b',true);
+          if(action==='fusion')this.castFusion(true);
           if(action==='dash')this.dash();
         });
         if(action==='basic'){
@@ -2111,8 +3359,8 @@ body.forging::after {
       if (this.running) return;
       this.running = true;
       this.canvas.focus();
-      this.enterRealm(0, true);
-      LF.audio.startMusic(0);
+      if (this.restoreCheckpoint(this.resumeState)) this.startRestoredCheckpoint();
+      else this.enterRealm(0, true);
       this.lastTime = performance.now();
       this.frame = requestAnimationFrame(time => this.loop(time));
     }
@@ -2120,13 +3368,18 @@ body.forging::after {
     stop() {
       this.running = false;
       if (this.frame) cancelAnimationFrame(this.frame);
+      if (this.endTimer) { clearTimeout(this.endTimer); this.endTimer = 0; }
+      this.clearInputState();
       this.boundEvents.splice(0).forEach(unbind => unbind());
+      LF.audio.setPaused?.(false);
       LF.audio.stopMusic();
     }
 
     setPaused(value, reason = null) {
       this.paused = Boolean(value);
       this.pauseReason = this.paused ? reason : null;
+      if (this.paused) this.clearInputState();
+      LF.audio.setPaused?.(this.paused);
       if (!this.paused) this.lastTime = performance.now();
     }
 
@@ -2158,6 +3411,7 @@ body.forging::after {
       this.announce(realm.name, realm.subtitle, 2.7);
       if (!first) this.healPlayer(this.player.maxHp * .22, false);
       this.waveTransition = 2.9;
+      this.emitCheckpoint('realm-entry');
     }
 
     startWave() {
@@ -2186,6 +3440,7 @@ body.forging::after {
           this.spawnQueue.push({type,delay:.22+Math.random()*.25});
         }
       }
+      this.emitCheckpoint('wave-start');
     }
 
     update(dt) {
@@ -2252,8 +3507,8 @@ body.forging::after {
       return {x,y,len:Math.min(1,len)};
     }
 
-    aimPosition() {
-      if (this.mouse.active && !this.touchBasic) return { x:this.mouse.x, y:this.mouse.y };
+    aimPosition(forceAutoAim = false) {
+      if (!forceAutoAim && this.mouse.active && !this.touchBasic) return { x:this.mouse.x, y:this.mouse.y };
       const target=this.nearestEnemy(this.player.x,this.player.y,9999);
       return target?{x:target.x,y:target.y}:{x:this.player.x+100,y:this.player.y};
     }
@@ -2275,8 +3530,15 @@ body.forging::after {
       p.x=U.clamp(p.x,34,this.width-34);p.y=U.clamp(p.y,52,this.height-34);
       if((this.mouse.down||this.touchBasic||this.keys.has('KeyJ'))&&p.fireTimer<=0)this.basicAttack();
       if(p.auraDamage>0){
-        for(const enemy of this.enemies){if(!enemy.dead&&U.distance(p.x,p.y,enemy.x,enemy.y)<p.radius+enemy.radius+42)this.damageEnemy(enemy,p.auraDamage*dt,this.child.element,'aura',false);}
-      }
+        const interval=this.effectLimits.auraInterval;
+        this.auraTickTimer+=dt;
+        if(this.auraTickTimer>=interval){
+          this.auraTickTimer-=interval;
+          for(const enemy of this.enemies){
+            if(!enemy.dead&&U.distance(p.x,p.y,enemy.x,enemy.y)<p.radius+enemy.radius+42)this.damageEnemy(enemy,p.auraDamage*interval,this.child.element,'aura',false,false,true);
+          }
+        }
+      }else this.auraTickTimer=0;
     }
 
     basicAttack() {
@@ -2311,19 +3573,19 @@ body.forging::after {
       LF.audio.play('dash');
     }
 
-    castAbility(slot) {
+    castAbility(slot,forceAutoAim=false) {
       if(this.paused||this.ended)return;
       const p=this.player;
       if(p.cooldowns[slot]>0)return;
       const ability=slot==='a'?this.child.abilities.parentA:this.child.abilities.parentB;
       p.cooldowns[slot]=p.baseCooldowns[slot]*p.abilityCooldownMult;
-      this.castElement(ability.element,1,slot);
+      this.castElement(ability.element,1,slot,false,forceAutoAim);
       LF.audio.play('ability');
-      if(p.echoChance&&Math.random()<p.echoChance){this.delayedActions.push({time:.55,fn:()=>this.castElement(ability.element,.65,'echo',true)});}
+      if(p.echoChance&&Math.random()<p.echoChance){this.delayedActions.push({time:.55,fn:()=>this.castElement(ability.element,.65,'echo',true,forceAutoAim)});}
     }
 
-    castElement(element,power=1,source='ability',free=false) {
-      const p=this.player, aim=this.aimPosition(), angle=Math.atan2(aim.y-p.y,aim.x-p.x);
+    castElement(element,power=1,source='ability',free=false,forceAutoAim=false) {
+      const p=this.player, aim=this.aimPosition(forceAutoAim), angle=Math.atan2(aim.y-p.y,aim.x-p.x);
       const color=LF.ELEMENTS[element]?.color||this.child.colors[2];
       const baseDamage=p.damage*p.damageMult*power*(this.fusionAura>0?1.25:1);
       if(element==='fire'){
@@ -2377,7 +3639,7 @@ body.forging::after {
       if(!free){this.flash.color=color;this.flash.alpha=Math.max(this.flash.alpha,.08);}
     }
 
-    castFusion() {
+    castFusion(forceAutoAim=false) {
       if(this.paused||this.ended||this.player.cooldowns.fusion>0)return;
       const p=this.player;
       p.cooldowns.fusion=p.baseCooldowns.fusion*p.fusionCooldownMult;
@@ -2385,9 +3647,9 @@ body.forging::after {
       const mult=p.fusionDamageMult||1;
       this.damageArea(p.x,p.y,360,p.damage*p.damageMult*4.1*mult,this.child.element,{knockback:280,stun:.65});
       this.addEffect('fusion',p.x,p.y,30,430,this.child.colors[2],1.3);
-      this.castElement(this.child.abilities.parentA.element,1.45*mult,'fusion',true);
-      this.delayedActions.push({time:.22,fn:()=>this.castElement(this.child.abilities.parentB.element,1.45*mult,'fusion',true)});
-      if(this.child.thirdElement)this.delayedActions.push({time:.48,fn:()=>this.castElement(this.child.thirdElement,1.25,'fusion',true)});
+      this.castElement(this.child.abilities.parentA.element,1.45*mult,'fusion',true,forceAutoAim);
+      this.delayedActions.push({time:.22,fn:()=>this.castElement(this.child.abilities.parentB.element,1.45*mult,'fusion',true,forceAutoAim)});
+      if(this.child.thirdElement)this.delayedActions.push({time:.48,fn:()=>this.castElement(this.child.thirdElement,1.25,'fusion',true,forceAutoAim)});
       this.flash.color=this.child.colors[2];this.flash.alpha=.42;this.shake=24;
       LF.audio.play('fusion');
     }
@@ -2582,16 +3844,16 @@ body.forging::after {
       if(element==='bio')this.applyStatus(enemy,'poison',4,Math.max(2,damage*.1));
     }
 
-    damageEnemy(enemy,amount,element='fire',source='unknown',forcedCrit=false,silent=false) {
+    damageEnemy(enemy,amount,element='fire',source='unknown',forcedCrit=false,silent=false,quiet=false) {
       if(!enemy||enemy.dead)return;
       const crit=forcedCrit||(!['status','aura'].includes(source)&&Math.random()<this.player.critChance*.15);
       let damage=amount*(crit?this.player.critMult:1);
       if(enemy.behavior==='boss')damage*=.88;
       enemy.hp-=damage;this.stats.damage+=damage;
       this.applyElementStatus(enemy,element,damage);
-      if(this.player.lifeSteal>0&&!silent)this.healPlayer(damage*this.player.lifeSteal,false);
-      this.damageTexts.push({x:enemy.x+(Math.random()-.5)*12,y:enemy.y-enemy.radius,value:Math.round(damage),color:crit?'#fff2a8':LF.ELEMENTS[element]?.color||'#fff',life:.65,maxLife:.65,crit});
-      if(!silent){for(let i=0;i<(crit?8:3);i++)this.spawnParticle(enemy.x,enemy.y,LF.ELEMENTS[element]?.color||enemy.color,2+Math.random()*4,Math.random()*TAU,50+Math.random()*120,.35);LF.audio.play(crit?'crit':'hit');}
+      if(this.player.lifeSteal>0&&(!silent||quiet))this.healPlayer(damage*this.player.lifeSteal,false);
+      if(!quiet)this.addDamageText({x:enemy.x+(Math.random()-.5)*12,y:enemy.y-enemy.radius,value:Math.round(damage),color:crit?'#fff2a8':LF.ELEMENTS[element]?.color||'#fff',life:.65,maxLife:.65,crit});
+      if(!silent&&!quiet){for(let i=0;i<(crit?8:3);i++)this.spawnParticle(enemy.x,enemy.y,LF.ELEMENTS[element]?.color||enemy.color,2+Math.random()*4,Math.random()*TAU,50+Math.random()*120,.35);LF.audio.play(crit?'crit':'hit');}
       if(enemy.hp<=0)this.killEnemy(enemy,element);
     }
 
@@ -2630,7 +3892,7 @@ body.forging::after {
       if(amount<=0||this.player.hp<=0)return;
       const actual=Math.min(this.player.maxHp-this.player.hp,amount*this.player.healBonus);
       if(actual<=0)return;this.player.hp+=actual;
-      if(show){this.damageTexts.push({x:this.player.x,y:this.player.y-30,value:`+${Math.round(actual)}`,color:'#69f0a7',life:.8,maxLife:.8,crit:false});LF.audio.play('heal');}
+      if(show){this.addDamageText({x:this.player.x,y:this.player.y-30,value:`+${Math.round(actual)}`,color:'#69f0a7',life:.8,maxLife:.8,crit:false});LF.audio.play('heal');}
     }
 
     gainXp(amount) {
@@ -2709,8 +3971,19 @@ body.forging::after {
       return best;
     }
 
-    spawnParticle(x,y,color,size=4,angle=Math.random()*TAU,speed=70,life=.5) { this.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,color,size,life,maxLife:life}); }
-    spawnTrail(x,y,color,size=4) { this.particles.push({x,y,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20,color,size,life:.3,maxLife:.3}); }
+    addDamageText(entry) {
+      if(this.damageTexts.length>=this.effectLimits.damageTexts)this.damageTexts.shift();
+      this.damageTexts.push(entry);
+    }
+
+    spawnParticle(x,y,color,size=4,angle=Math.random()*TAU,speed=70,life=.5) {
+      if(this.particles.length>=this.effectLimits.particles)return;
+      this.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,color,size,life,maxLife:life});
+    }
+    spawnTrail(x,y,color,size=4) {
+      if(this.particles.length>=this.effectLimits.particles)return;
+      this.particles.push({x,y,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20,color,size,life:.3,maxLife:.3});
+    }
     addEffect(type,...args) { this.effects.push({type,args,life:args[args.length-1]||.5,maxLife:args[args.length-1]||.5}); }
 
     updateParticles(dt) {
@@ -2728,13 +4001,14 @@ body.forging::after {
     end(victory) {
       if(this.ended)return;this.ended=true;this.setPaused(true,'end');
       LF.audio.stopMusic();LF.audio.play(victory?'victory':'defeat');
-      const essence=Math.round((victory?150:24)+this.stats.kills*1.4+this.realmIndex*28+(this.child.generation||1)*8);
+      const baseEssence=(victory?150:24)+this.stats.kills*1.4+this.realmIndex*28+(this.child.generation||1)*8;
+      const essence=Math.round(baseEssence*(1+this.legacyRanks.resonance*.05));
       const result={
         victory,score:Math.round(this.stats.score),kills:this.stats.kills,damage:Math.round(this.stats.damage),damageTaken:Math.round(this.stats.damageTaken),
         maxCombo:this.stats.maxCombo,level:this.player.level,time:this.runTime,realm:this.realmIndex,wave:this.wave,bosses:[...this.stats.bosses],essence,
-        accuracy:this.stats.shots?Math.round(this.stats.hits/this.stats.shots*100):0
+        accuracy:this.stats.shots?U.clamp(Math.round(this.stats.hits/this.stats.shots*100),0,100):0
       };
-      setTimeout(()=>this.callbacks.onEnd?.(result),victory?1800:900);
+      this.endTimer=window.setTimeout(()=>{this.endTimer=0;this.callbacks.onEnd?.(result);},victory?1800:900);
     }
 
     updateHud() {
@@ -2863,7 +4137,7 @@ body.forging::after {
   LF.ArenaGame = ArenaGame;
 })();
 
-  </script>
+</script>
   <script>
 (function () {
   const LF = window.LF;
@@ -2878,36 +4152,54 @@ body.forging::after {
       this.essenceCount = document.getElementById('essenceCount');
       this.cleanupTasks = [];
       this.activeGame = null;
+      this.activeRunToken = null;
+      this.modalCleanup = null;
+      this.previousFocus = null;
       this.currentScreen = 'menu';
       this.resultHandled = false;
       this.draft = { mode:'campaign', parentA:null, parentB:null, education:{mentor:null,discipline:null,event:null}, seed:'GENESIS', child:null };
       LF.storage.load();
+      this.applySettings();
       LF.audio.init(LF.storage.data.settings.sound);
       this.bindGlobal();
       this.refreshMeta();
       this.showMenu();
       this.registerServiceWorker();
+      if(!LF.storage.data.progression?.tutorialSeen && !LF.storage.data.statistics?.runs)setTimeout(()=>this.showOnboarding(),180);
     }
 
     bindGlobal() {
       document.getElementById('homeBtn').addEventListener('click', () => {
         LF.audio.play('back');
         if (this.activeGame && !this.activeGame.ended) {
-          this.confirm('Quitter la mission ?', 'La partie en cours sera enregistrée comme une défaite.', 'Quitter', () => {
+          if(this.activeGame.pauseReason==='upgrade'){
+            this.toast('Choisis d’abord une mutation pour sécuriser la vague.', 'error');
+            return;
+          }
+          this.activeGame.setPaused(true,'menu');
+          this.confirm('Retourner au Berceau ?', 'La mission reprendra au début de la vague actuelle. Aucun résultat ne sera perdu.', 'Sauvegarder et quitter', () => {
+            const game=this.activeGame;
             this.closeModal();
-            this.activeGame.end(false);
-          });
+            game?.stop();
+            this.activeGame=null;
+            this.showMenu();
+          }, false, ()=>this.activeGame?.setPaused(false));
+        } else if(this.activeGame?.ended && !this.resultHandled) {
+          this.toast('Archivage de la mission en cours…');
         } else this.showMenu();
       });
       document.getElementById('soundBtn').addEventListener('click', event => {
         const value = !LF.storage.data.settings.sound;
         LF.storage.data.settings.sound = value;
-        LF.storage.save();
-        LF.audio.setEnabled(value);
-        event.currentTarget.textContent = value ? '♪' : '×';
-        this.toast(value ? 'Son activé' : 'Son coupé');
+        const saved=LF.storage.save();
+        const actual=Boolean(LF.storage.data.settings.sound);
+        LF.audio.setEnabled(actual);
+        event.currentTarget.textContent = actual ? '♪' : '×';
+        event.currentTarget.setAttribute('aria-pressed',String(actual));
+        this.toast(saved?(actual?'Son activé':'Son coupé'):'Le réglage n’a pas pu être enregistré.',saved?'success':'error');
       });
       document.getElementById('soundBtn').textContent = LF.storage.data.settings.sound ? '♪' : '×';
+      document.getElementById('soundBtn').setAttribute('aria-pressed',String(LF.storage.data.settings.sound));
       document.getElementById('fullscreenBtn').addEventListener('click', async () => {
         try {
           if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
@@ -2923,12 +4215,33 @@ body.forging::after {
         }
       });
       window.addEventListener('beforeunload', () => this.activeGame?.stop());
+      window.addEventListener('storage', event=>{
+        if(event.key!==LF.storage.key||this.activeGame)return;
+        LF.storage.load();this.applySettings();this.refreshMeta();this.toast('Sauvegarde synchronisée depuis un autre onglet.');
+        if(this.currentScreen==='menu')this.showMenu();
+      });
+      window.addEventListener('error',event=>{console.error(event.error||event.message);this.toast('Une erreur inattendue a été contenue. La sauvegarde reste intacte.','error');});
+      window.addEventListener('unhandledrejection',event=>{console.error(event.reason);this.toast('Une opération a échoué sans endommager la dynastie.','error');});
     }
 
-    registerServiceWorker() {
+    async registerServiceWorker() {
       if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        try{
+          const registration=await navigator.serviceWorker.register('./sw.js');
+          registration.addEventListener('updatefound',()=>{
+            const worker=registration.installing;
+            worker?.addEventListener('statechange',()=>{
+              if(worker.state==='installed'&&navigator.serviceWorker.controller)this.toast('Mise à jour prête. Elle sera active au prochain chargement.');
+            });
+          });
+        }catch(error){console.warn('Service worker indisponible.',error);}
       }
+    }
+
+    applySettings() {
+      const settings=LF.storage.data.settings||{};
+      document.documentElement.classList.toggle('reduced-motion',Boolean(settings.reducedMotion));
+      document.documentElement.classList.toggle('high-contrast',Boolean(settings.highContrast));
     }
 
     template(id) {
@@ -2949,7 +4262,7 @@ body.forging::after {
 
     cleanup() {
       this.cleanupTasks.splice(0).forEach(task => { try { task(); } catch {} });
-      if (this.activeGame && this.currentScreen === 'game') {
+      if (this.activeGame) {
         this.activeGame.stop();
         this.activeGame = null;
       }
@@ -2971,24 +4284,55 @@ body.forging::after {
       setTimeout(() => toast.remove(), duration);
     }
 
-    showModal(content) {
+    showModal(content, options={}) {
+      this.closeModal(false);
+      this.previousFocus=document.activeElement;
       this.modalLayer.innerHTML = '';
       this.modalLayer.appendChild(content);
+      const title=content.querySelector('h1,h2,h3');
+      if(title){
+        title.id=title.id||'activeModalTitle';
+        this.modalLayer.setAttribute('aria-labelledby',title.id);
+      }else this.modalLayer.setAttribute('aria-label','Fenêtre de dialogue');
       this.modalLayer.classList.remove('hidden');
+      const keyHandler=event=>{
+        if(event.key==='Escape'){
+          event.preventDefault();
+          event.stopPropagation();
+          if(typeof options.onEscape==='function')options.onEscape();
+          else if(!options.locked)this.closeModal();
+          return;
+        }
+        if(event.key!=='Tab')return;
+        const focusable=[...content.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[href],[tabindex]:not([tabindex="-1"])')];
+        if(!focusable.length){event.preventDefault();content.focus();return;}
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+      };
+      document.addEventListener('keydown',keyHandler);
+      this.modalCleanup=()=>document.removeEventListener('keydown',keyHandler);
+      requestAnimationFrame(()=>{(content.querySelector('[autofocus],button:not([disabled]),input:not([disabled]),textarea:not([disabled])')||content).focus();});
     }
 
-    closeModal() {
+    closeModal(restoreFocus=true) {
+      this.modalCleanup?.();this.modalCleanup=null;
       this.modalLayer.classList.add('hidden');
       this.modalLayer.innerHTML = '';
+      this.modalLayer.removeAttribute('aria-labelledby');
+      this.modalLayer.removeAttribute('aria-label');
+      if(restoreFocus&&this.previousFocus?.isConnected)this.previousFocus.focus();
+      this.previousFocus=null;
     }
 
-    confirm(title, text, confirmLabel, onConfirm, danger=false) {
+    confirm(title, text, confirmLabel, onConfirm, danger=false, onCancel=null) {
       const card = document.createElement('div');
-      card.className = 'modal-card';
+      card.className = 'modal-card';card.tabIndex=-1;
       card.innerHTML = `<p class="eyebrow">CONFIRMATION</p><h3>${U.escapeHtml(title)}</h3><p>${U.escapeHtml(text)}</p><div class="modal-actions"><button class="ghost-button modal-cancel">Annuler</button><button class="${danger?'primary-button':'secondary-button'} modal-confirm">${U.escapeHtml(confirmLabel)}</button></div>`;
-      card.querySelector('.modal-cancel').addEventListener('click', () => this.closeModal());
+      const cancel=()=>{this.closeModal();onCancel?.();};
+      card.querySelector('.modal-cancel').addEventListener('click',cancel);
       card.querySelector('.modal-confirm').addEventListener('click', onConfirm);
-      this.showModal(card);
+      this.showModal(card,{onEscape:cancel});
     }
 
     randomSeed() {
@@ -2997,24 +4341,51 @@ body.forging::after {
       return out;
     }
 
+    persistDraft() {
+      if(this.draft.mode==='lab')return true;
+      const saved=LF.storage.setDraft(this.draft);
+      if(saved===false)this.toast('La forge n’a pas pu être sauvegardée. Exporte la dynastie avant de quitter.','error');
+      return saved;
+    }
+
     showMenu() {
       const node = this.mount(this.template('menuTemplate'), 'menu', 'BERCEAU ZÉRO — EN ATTENTE');
       const dynasty = LF.storage.data.dynasty;
       const latest = dynasty[dynasty.length-1];
+      const activeRun=LF.storage.data.activeRun;
+      const saved=LF.storage.data.activeDraft;
       node.querySelector('#menuDynastyCount').textContent = `${dynasty.length} héritier${dynasty.length>1?'s':''}`;
-      node.querySelector('.menu-new').addEventListener('click', () => this.beginFusion('campaign'));
-      node.querySelector('.menu-continue').addEventListener('click', () => {
-        const saved=LF.storage.data.activeDraft;
-        if(saved?.child){this.draft=U.deepClone(saved);this.showReveal();}
-        else if(latest){this.beginFusion('campaign',LF.fusion.childAsOrigin(latest));}
-        else this.beginFusion('campaign');
+      node.querySelector('.menu-new').addEventListener('click', () => {
+        const start=()=>{if(!LF.storage.clearRunAndDraft()){this.toast('Impossible de remplacer la mission sauvegardée. Exporte la dynastie puis libère de l’espace.','error',5200);return;}this.closeModal();this.beginFusion('campaign');};
+        if(activeRun)this.confirm('Abandonner la mission sauvegardée ?','Le point de reprise actuel sera supprimé. La dynastie déjà archivée restera intacte.','Nouvelle lignée',start,true);
+        else start();
       });
+      node.querySelector('.menu-continue').addEventListener('click', () => {
+        if(activeRun&&saved?.child){this.draft=U.deepClone(saved);this.showGame(activeRun);}
+        else if(saved?.child){this.draft=U.deepClone(saved);this.showReveal();}
+        else if(latest){this.beginFusion('campaign',LF.fusion.childAsOrigin(latest));}
+      });
+      const continueButton=node.querySelector('.menu-continue');
+      if(activeRun&&saved?.child){
+        continueButton.textContent='Reprendre la mission — vague '+Math.max(1,Number(activeRun.wave)||1);
+      }else if(saved?.child)continueButton.textContent='Reprendre la forge';
+      else if(latest)continueButton.textContent='Continuer avec '+latest.name;
+      else{
+        continueButton.textContent='Aucune lignée à continuer';
+        continueButton.disabled=true;
+      }
       node.querySelector('.menu-lab').addEventListener('click', () => this.beginFusion('lab'));
       node.querySelector('.menu-dynasty').addEventListener('click', () => this.showDynasty());
+      node.querySelector('.menu-legacy').addEventListener('click',()=>this.showLegacy());
       node.querySelector('.menu-help').addEventListener('click', () => this.showHelp());
+      node.querySelector('.menu-settings').addEventListener('click',()=>this.showSettings());
       node.querySelector('.menu-reset').addEventListener('click', () => {
         this.confirm('Effacer toute la dynastie ?', 'Les héritiers, l’Essence, les statistiques et la progression seront définitivement supprimés.', 'Tout effacer', () => {
-          LF.storage.reset();this.refreshMeta();this.closeModal();this.toast('Nouvelle sauvegarde créée.');this.showMenu();
+          if(!LF.storage.reset()){this.toast('La réinitialisation a échoué : les données existantes ont été conservées.','error',5200);return;}
+          this.applySettings();LF.audio.setEnabled(LF.storage.data.settings.sound);
+          document.getElementById('soundBtn').textContent=LF.storage.data.settings.sound?'♪':'×';
+          document.getElementById('soundBtn').setAttribute('aria-pressed',String(LF.storage.data.settings.sound));
+          this.refreshMeta();this.closeModal();this.toast('Nouvelle sauvegarde créée.');this.showMenu();
         }, true);
       });
       const models=[];
@@ -3033,6 +4404,7 @@ body.forging::after {
         mode, parentA:presetA?U.deepClone(presetA):null, parentB:presetB?U.deepClone(presetB):null,
         education:{mentor:null,discipline:null,event:null}, seed:this.randomSeed(), child:null
       };
+      this.persistDraft();
       this.showFusion();
     }
 
@@ -3073,16 +4445,23 @@ body.forging::after {
           if(this.draft.parentA?.id===origin.id)card.classList.add('selected-a');
           if(this.draft.parentB?.id===origin.id)card.classList.add('selected-b');
           card.innerHTML=`<canvas width="220" height="185"></canvas>${origin.generation?`<span class="card-generation">G${origin.generation}</span>`:''}<div class="origin-card-info"><strong>${U.escapeHtml(origin.name)}</strong><span>${U.escapeHtml(LF.ELEMENTS[origin.element]?.name||'Anomalie')} · ${U.escapeHtml(origin.role||'Origine')}</span></div>`;
+          card.setAttribute('aria-pressed',String(this.draft.parentA?.id===origin.id||this.draft.parentB?.id===origin.id));
+          const build=document.createElement('span');build.className='origin-card-build';
+          build.textContent='VIT '+origin.stats.vitality+' · PUI '+origin.stats.power+' · VIT. '+origin.stats.speed+' · '+(origin.ability?.name||'Pouvoir hybride');
+          card.querySelector('.origin-card-info').appendChild(build);
           card.addEventListener('click',()=>selectOrigin(origin));grid.appendChild(card);LF.render.drawCard(card.querySelector('canvas'),origin,{ring:false,scale:.82});
         }
       };
 
       const update=()=>{
         renderSlot(slotA,this.draft.parentA,'A');renderSlot(slotB,this.draft.parentB,'B');
-        next.disabled=!(this.draft.parentA&&this.draft.parentB);renderGrid();
+        next.disabled=!(this.draft.parentA&&this.draft.parentB);renderGrid();this.persistDraft();
       };
       node.querySelector('.roster-search').addEventListener('input',event=>{search=event.target.value.trim().toLowerCase();renderGrid();});
-      node.querySelectorAll('.tab-button').forEach(button=>button.addEventListener('click',()=>{node.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));button.classList.add('active');filter=button.dataset.filter;renderGrid();}));
+      node.querySelectorAll('.tab-button').forEach(button=>{
+        button.setAttribute('aria-pressed',String(button.classList.contains('active')));
+        button.addEventListener('click',()=>{node.querySelectorAll('.tab-button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});button.classList.add('active');button.setAttribute('aria-pressed','true');filter=button.dataset.filter;renderGrid();});
+      });
       node.querySelector('.fusion-random').addEventListener('click',()=>{this.draft.parentA=U.deepClone(U.pick(origins));this.draft.parentB=U.deepClone(U.pick(origins));activeSlot='A';update();LF.audio.play('select');});
       next.addEventListener('click',()=>this.showEducation());
       importButton.addEventListener('click',()=>this.showImportCodeModal());
@@ -3094,7 +4473,7 @@ body.forging::after {
       card.innerHTML=`<p class="eyebrow">IMPORT GÉNÉTIQUE</p><h3>Restaurer un héritier</h3><p>Colle un code commençant par <strong>SOA1-</strong>. L’héritier importé sera ajouté à ta dynastie et pourra servir de parent.</p><textarea class="code-area" style="width:100%;min-height:140px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.25);color:var(--text);padding:12px;resize:vertical" placeholder="SOA1-…"></textarea><div class="modal-actions"><button class="ghost-button cancel">Annuler</button><button class="primary-button import">Importer</button></div>`;
       card.querySelector('.cancel').addEventListener('click',()=>this.closeModal());
       card.querySelector('.import').addEventListener('click',()=>{
-        try{const child=LF.fusion.decodeChild(card.querySelector('textarea').value);LF.storage.addOrUpdateHeir(child);this.closeModal();this.toast(`${child.name} a rejoint la dynastie.`);this.showFusion();}
+        try{const child=LF.fusion.decodeChild(card.querySelector('textarea').value);if(!LF.storage.addOrUpdateHeir(child))throw LF.storage.lastError||new Error('Import impossible.');this.closeModal();this.toast(`${child.name} a rejoint la dynastie.`);this.showFusion();}
         catch(error){this.toast(error.message,'error');}
       });
       this.showModal(card);card.querySelector('textarea').focus();
@@ -3120,21 +4499,23 @@ body.forging::after {
           const options=section.querySelector('.education-options');
           for(const option of group.options){
             const button=document.createElement('button');button.className='education-card';if(this.draft.education[group.id]===option.id)button.classList.add('selected');
+            button.setAttribute('aria-pressed',String(this.draft.education[group.id]===option.id));
             button.innerHTML=`<strong>${option.icon?`${option.icon} `:''}${U.escapeHtml(option.name)}</strong><p>${U.escapeHtml(option.desc)}</p><span class="education-effect">${U.escapeHtml(option.effect)}</span>`;
             button.addEventListener('click',()=>{this.draft.education[group.id]=option.id;LF.audio.play('select');render();});options.appendChild(button);
           }
           columns.appendChild(section);
         }
         node.querySelector('.education-forge').disabled=!this.draft.education.mentor||!this.draft.education.discipline||!this.draft.education.event;
+        this.persistDraft();
       };
       const seedInput=node.querySelector('#seedInput');seedInput.value=this.draft.seed;
-      seedInput.addEventListener('input',()=>{this.draft.seed=seedInput.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,12);seedInput.value=this.draft.seed;});
-      node.querySelector('.seed-random').addEventListener('click',()=>{this.draft.seed=this.randomSeed();seedInput.value=this.draft.seed;LF.audio.play('select');});
+      seedInput.addEventListener('input',()=>{this.draft.seed=seedInput.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,12);seedInput.value=this.draft.seed;this.persistDraft();});
+      node.querySelector('.seed-random').addEventListener('click',()=>{this.draft.seed=this.randomSeed();seedInput.value=this.draft.seed;LF.audio.play('select');this.persistDraft();});
       node.querySelector('.education-back').addEventListener('click',()=>this.showFusion());
       node.querySelector('.education-forge').addEventListener('click',()=>{
         try{
           this.draft.child=LF.fusion.generateChild(this.draft.parentA,this.draft.parentB,this.draft.education,this.draft.seed);
-          LF.storage.setDraft(this.draft);LF.audio.play('forge');
+          this.persistDraft();LF.audio.play('forge');
           document.body.classList.add('forging');setTimeout(()=>{document.body.classList.remove('forging');this.showReveal();},620);
         }catch(error){this.toast(error.message,'error');}
       });
@@ -3143,6 +4524,7 @@ body.forging::after {
 
     showReveal() {
       const child=this.draft.child;if(!child)return this.showEducation();
+      this.persistDraft();
       const node=this.mount(this.template('revealTemplate'),'reveal',`HÉRITIER ${child.name.toUpperCase()} — STABLE`);
       node.querySelector('.rarity-badge').textContent=child.rarity;node.querySelector('.rarity-badge').style.color=child.rarityColor;
       node.querySelector('.child-name').textContent=child.name;node.querySelector('.child-title').textContent=child.title;
@@ -3158,15 +4540,20 @@ body.forging::after {
       node.querySelector('.reveal-back').addEventListener('click',()=>{this.draft.child=null;this.showFusion();});
     }
 
-    showGame() {
+    showGame(resumeState=null) {
       const child=this.draft.child;if(!child)return this.showMenu();
+      this.persistDraft();
       const node=this.mount(this.template('gameTemplate'),'game',`MISSION ACTIVE — ${child.name.toUpperCase()}`);
       this.resultHandled=false;
+      const runToken=U.randomId('run');this.activeRunToken=runToken;
       const canvas=node.querySelector('#gameCanvas');
       const game=new LF.ArenaGame(canvas,child,node,{
         onUpgrade:(instance,payload)=>this.showUpgradeModal(instance,payload),
         onPause:instance=>this.showPauseModal(instance),
-        onEnd:result=>this.handleRunEnd(result)
+        onEnd:result=>this.handleRunEnd(result,child,runToken),
+        onCheckpoint:state=>{if(this.draft.mode==='campaign'&&this.activeRunToken===runToken)LF.storage.setActiveRun(state);},
+        resumeState,
+        quality:LF.storage.data.settings.quality||'auto'
       });
       this.activeGame=game;
       game.start();
@@ -3181,7 +4568,7 @@ body.forging::after {
         const button=document.createElement('button');button.className='upgrade-card';button.innerHTML=`<span>${upgrade.icon}</span><strong>${U.escapeHtml(upgrade.name)}</strong><small>${U.escapeHtml(upgrade.desc)}</small>`;
         button.addEventListener('click',()=>{LF.audio.play('select');this.closeModal();game.chooseUpgrade(upgrade.id);});grid.appendChild(button);
       }
-      this.showModal(card);
+      this.showModal(card,{locked:true});
     }
 
     showPauseModal(game) {
@@ -3190,33 +4577,45 @@ body.forging::after {
       const card=document.createElement('div');card.className='modal-card';
       card.innerHTML=`<p class="eyebrow">MISSION SUSPENDUE</p><h3>Pause</h3><p>ZQSD/WASD pour bouger · clic pour tirer · 1 et 2 pour les héritages · R pour la fusion · Espace pour l’esquive.</p><div class="modal-actions"><button class="ghost-button abandon">Abandonner</button><button class="primary-button resume">Reprendre</button></div>`;
       card.querySelector('.resume').addEventListener('click',()=>{this.closeModal();game.setPaused(false);});
-      card.querySelector('.abandon').addEventListener('click',()=>this.confirm('Abandonner la mission ?', 'L’héritier sera archivé, mais cette tentative comptera comme une défaite.', 'Abandonner', ()=>{this.closeModal();game.end(false);}, true));
-      this.showModal(card);
+      card.querySelector('.abandon').addEventListener('click',()=>this.confirm('Abandonner la mission ?', 'L’héritier sera archivé, mais cette tentative comptera comme une défaite.', 'Abandonner', ()=>{this.closeModal();game.end(false);}, true, ()=>this.showPauseModal(game)));
+      this.showModal(card,{onEscape:()=>{this.closeModal();game.setPaused(false);}});
     }
 
-    handleRunEnd(result) {
-      if(this.resultHandled)return;this.resultHandled=true;
-      const child=this.draft.child;
-      LF.storage.registerRun(result);
-      LF.storage.addOrUpdateHeir(child,result);
-      LF.storage.clearDraft();
+    handleRunEnd(result,child,runToken) {
+      if(this.resultHandled||runToken!==this.activeRunToken)return;this.resultHandled=true;
+      const lab=this.draft.mode==='lab';
+      const saved=lab?true:Boolean(LF.storage.completeRun(child,result));
+      if(!saved)this.toast('La mission est terminée, mais l’archivage local a échoué. Exporte la sauvegarde avant de quitter.','error',5200);
       this.refreshMeta();
-      this.showResults(result);
+      this.showResults(result,child,{lab,saved});
     }
 
-    showResults(result) {
-      const child=this.draft.child;
-      const node=this.mount(this.template('resultsTemplate'),'results',result.victory?'LIGNÉE VICTORIEUSE — ARCHIVÉE':'MISSION TERMINÉE — HÉRITIER ARCHIVÉ');
+    showResults(result,childOverride=null,options={}) {
+      const child=childOverride||this.draft.child;
+      const lab=Boolean(options.lab),saved=options.saved!==false;
+      const status=lab?'SIMULATION DU LABORATOIRE — TERMINÉE':saved?(result.victory?'LIGNÉE VICTORIEUSE — ARCHIVÉE':'MISSION TERMINÉE — HÉRITIER ARCHIVÉ'):'MISSION TERMINÉE — ARCHIVAGE EN ÉCHEC';
+      const node=this.mount(this.template('resultsTemplate'),'results',status);
       node.querySelector('.result-kicker').textContent=result.victory?'LE PROGÉNITEUR EST TOMBÉ':'LA FRACTURE A REJETÉ L’HÉRITIER';
       node.querySelector('.result-title').textContent=result.victory?'Dynastie validée':'Lignée interrompue';
       node.querySelector('.result-copy').textContent=result.victory?`${child.name} n’est plus une anomalie expérimentale : sa lignée est désormais capable de survivre à tous les royaumes connus.`:`${child.name} rejoint malgré tout les archives du Berceau. Ses gènes restent disponibles pour une nouvelle génération mieux préparée.`;
       const stats=[['SCORE',U.formatNumber(result.score)],['ÉLIMINATIONS',U.formatNumber(result.kills)],['NIVEAU',result.level],['TEMPS',U.formatTime(result.time)],['COMBO MAX',result.maxCombo],['PRÉCISION',`${result.accuracy}%`]];
       node.querySelector('.result-stats').innerHTML=stats.map(([label,value])=>`<div class="result-stat"><small>${label}</small><strong>${value}</strong></div>`).join('');
       node.querySelector('.result-rewards').innerHTML=`<strong>◆ +${U.formatNumber(result.essence)} ESSENCE DYNASTIQUE</strong><br>${result.victory?'Statut Légende obtenu. Cet héritier transmettra une lignée prestigieuse.':'L’héritier est sauvegardé et peut immédiatement devenir parent.'}`;
+      if(lab){
+        node.querySelector('.result-kicker').textContent='SIMULATION SANS CONSÉQUENCE';
+        node.querySelector('.result-title').textContent=result.victory?'Prototype validé':'Données de combat collectées';
+        node.querySelector('.result-copy').textContent=child.name+' a été testé sans modifier la dynastie ni la mission de campagne sauvegardée.';
+        node.querySelector('.result-rewards').textContent='Laboratoire libre : aucun archivage et aucune Essence attribuée.';
+      }else if(!saved){
+        node.querySelector('.result-copy').textContent='Le combat est terminé, mais le navigateur a refusé l’écriture. Le point de reprise est conservé pour éviter toute perte.';
+        node.querySelector('.result-rewards').textContent='Archivage non confirmé : libère de l’espace ou exporte la sauvegarde avant de réessayer.';
+      }
       const actions=node.querySelector('.result-actions');
       actions.innerHTML=`<button class="primary-button next-gen">Nouvelle génération <span>→</span></button><button class="secondary-button replay">Rejouer cet héritier</button><button class="ghost-button tree">Voir la dynastie</button><button class="ghost-button menu">Menu principal</button>`;
-      actions.querySelector('.next-gen').addEventListener('click',()=>this.beginFusion('campaign',LF.fusion.childAsOrigin({...child,legend:result.victory||child.legend})));
-      actions.querySelector('.replay').addEventListener('click',()=>this.showGame());
+      const persisted=LF.storage.data.dynasty.find(entry=>entry.id===child.id)||child;
+      if(lab)actions.querySelector('.next-gen').textContent='Nouvelle expérience';
+      actions.querySelector('.next-gen').addEventListener('click',()=>lab?this.beginFusion('lab'):this.beginFusion('campaign',LF.fusion.childAsOrigin(persisted)));
+      actions.querySelector('.replay').addEventListener('click',()=>{this.draft.child=U.deepClone(persisted);if(!lab)this.persistDraft();this.showGame();});
       actions.querySelector('.tree').addEventListener('click',()=>this.showDynasty(child.id));
       actions.querySelector('.menu').addEventListener('click',()=>this.showMenu());
       const stop=LF.render.startRevealAnimation(node.querySelector('.results-visual canvas'),child,'result');this.onCleanup(stop);
@@ -3257,7 +4656,59 @@ body.forging::after {
       if(dynasty.length)showDetails(dynasty.find(c=>c.id===preselectId)||dynasty[dynasty.length-1]);
     }
 
+    showOnboarding() {
+      if(this.currentScreen!=='menu'||!LF.storage.data.progression||LF.storage.data.progression.tutorialSeen)return;
+      const card=document.createElement('div');card.className='modal-card';card.tabIndex=-1;
+      card.innerHTML='<p class="eyebrow">BIENVENUE AU BERCEAU ZÉRO</p><h3>Ta première lignée en trois gestes</h3><p>Forge un héritier, apprends son build puis sécurise chaque vague. La mission pourra reprendre au dernier point sûr.</p><div class="onboarding-steps"><div class="onboarding-step"><strong>1 · Fusionne</strong><span>Choisis deux origines. Leurs statistiques, éléments et pouvoirs se transmettent.</span></div><div class="onboarding-step"><strong>2 · Façonne</strong><span>Mentor, discipline et événement rendent chaque enfant réellement différent.</span></div><div class="onboarding-step"><strong>3 · Survis</strong><span>Déplace-toi, tire, esquive et combine 1, 2 puis R contre douze vagues.</span></div></div><div class="modal-actions"><button class="ghost-button guide">Guide complet</button><button class="primary-button start">Forger ma première lignée</button></div>';
+      const markSeen=()=>{LF.storage.data.progression.tutorialSeen=true;LF.storage.save();};
+      card.querySelector('.guide').addEventListener('click',()=>{markSeen();this.closeModal();this.showHelp();});
+      card.querySelector('.start').addEventListener('click',()=>{markSeen();this.closeModal();this.beginFusion('campaign');});
+      this.showModal(card);
+    }
+
+    showSettings() {
+      const card=document.createElement('div');card.className='modal-card';card.tabIndex=-1;
+      card.innerHTML='<p class="eyebrow">RÉGLAGES</p><h3>Confort et accessibilité</h3><p>Ces préférences sont enregistrées avec la dynastie.</p><div class="settings-grid"><div class="setting-row"><span><strong>Son</strong><small>Musique et effets synthétisés</small></span><button class="ghost-button toggle-button sound-setting"></button></div><div class="setting-row"><span><strong>Mouvements réduits</strong><small>Supprime les animations non essentielles</small></span><button class="ghost-button toggle-button motion-setting"></button></div><div class="setting-row"><span><strong>Contraste renforcé</strong><small>Éclaircit les textes et les contours</small></span><button class="ghost-button toggle-button contrast-setting"></button></div><label class="setting-row"><span><strong>Qualité des effets</strong><small>Adapte les particules aux performances de l’appareil</small></span><select class="quality-setting"><option value="auto">Automatique</option><option value="high">Élevée</option><option value="low">Économie</option></select></label></div><div class="modal-actions"><button class="primary-button close-settings">Terminé</button></div>';
+      const bindToggle=(selector,key,label)=>{
+        const button=card.querySelector(selector);
+        const render=()=>{const value=Boolean(LF.storage.data.settings[key]);button.textContent=value?label+' : activé':label+' : désactivé';button.setAttribute('aria-pressed',String(value));};
+        button.addEventListener('click',()=>{LF.storage.data.settings[key]=!LF.storage.data.settings[key];const saved=LF.storage.save();if(!saved)this.toast('Le réglage n’a pas pu être enregistré.','error');if(key==='sound')LF.audio.setEnabled(LF.storage.data.settings.sound);this.applySettings();render();});
+        render();
+      };
+      bindToggle('.sound-setting','sound','Son');
+      bindToggle('.motion-setting','reducedMotion','Mouvements réduits');
+      bindToggle('.contrast-setting','highContrast','Contraste');
+      const quality=card.querySelector('.quality-setting');quality.value=LF.storage.data.settings.quality||'auto';
+      quality.addEventListener('change',()=>{LF.storage.data.settings.quality=quality.value;if(!LF.storage.save()){quality.value=LF.storage.data.settings.quality||'auto';this.toast('Le réglage n’a pas pu être enregistré.','error');}});
+      card.querySelector('.close-settings').addEventListener('click',()=>{const sound=Boolean(LF.storage.data.settings.sound);document.getElementById('soundBtn').textContent=sound?'♪':'×';document.getElementById('soundBtn').setAttribute('aria-pressed',String(sound));this.closeModal();});
+      this.showModal(card);
+    }
+
+    showLegacy() {
+      const node=this.mount(this.template('legacyTemplate'),'legacy','HÉRITAGE DU BERCEAU — STABILISATION');
+      const grid=node.querySelector('.legacy-grid');
+      const render=()=>{
+        const legacy=LF.storage.data.progression.legacy;
+        node.querySelector('.legacy-balance').innerHTML='<small>ESSENCE DISPONIBLE</small><strong>◆ '+U.formatNumber(LF.storage.data.essence)+'</strong>';
+        grid.innerHTML='';
+        for(const upgrade of LF.LEGACY_UPGRADES){
+          const rank=Number(legacy[upgrade.id])||0;
+          const cost=upgrade.baseCost*(rank+1);
+          const card=document.createElement('article');card.className='legacy-card';
+          const ranks=Array.from({length:upgrade.maxRank},(_,index)=>'<span class="'+(index<rank?'active':'')+'"></span>').join('');
+          card.innerHTML='<div class="legacy-icon">'+U.escapeHtml(upgrade.icon)+'</div><h3>'+U.escapeHtml(upgrade.name)+'</h3><p>'+U.escapeHtml(upgrade.desc)+'</p><div class="legacy-ranks" aria-label="Rang '+rank+' sur '+upgrade.maxRank+'">'+ranks+'</div><button class="secondary-button" '+(rank>=upgrade.maxRank?'disabled':'')+'>'+(rank>=upgrade.maxRank?'Rang maximum':'Investir ◆ '+U.formatNumber(cost))+'</button>';
+          card.querySelector('button').addEventListener('click',()=>{
+            if(LF.storage.purchaseLegacy(upgrade.id,cost,upgrade.maxRank)){LF.audio.play('level');this.refreshMeta();render();this.toast(upgrade.name+' atteint le rang '+(rank+1)+'.');}
+            else this.toast('Essence insuffisante ou rang maximum atteint.','error');
+          });
+          grid.appendChild(card);
+        }
+      };
+      render();
+    }
+
     showHelp() {
+      if(LF.storage.data.progression&&!LF.storage.data.progression.tutorialSeen){LF.storage.data.progression.tutorialSeen=true;LF.storage.save();}
       const node=this.mount(this.template('helpTemplate'),'help','MANUEL DU BERCEAU — OUVERT');
       node.querySelector('.help-play').addEventListener('click',()=>this.beginFusion('campaign'));
     }
@@ -3268,6 +4719,6 @@ body.forging::after {
   });
 })();
 
-  </script>
+</script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 SON OF A…! — Legacy Forge
-Version 1.0
+Version 1.1
 
 Concept, code, personnages, interface, effets visuels et univers créés pour ce projet.
 Les personnages et décors sont dessinés procéduralement en Canvas 2D.

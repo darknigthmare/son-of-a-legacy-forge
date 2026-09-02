@@ -135,6 +135,7 @@
     const generation=Math.max(parentA.generation||0,parentB.generation||0)+1;
     const synergy=F.getSynergy(parentA,parentB);
     const mutation=makeMutation(parentA,parentB,education,rng,generation);
+    const legendCount=(parentA.legend?1:0)+(parentB.legend?1:0);
 
     const stats={};
     for(const stat of ['vitality','power','speed','control']){
@@ -142,6 +143,8 @@
       const variance=rng()<.28?(rng()<.5?-1:1):0;
       const sameBonus=parentA.id===parentB.id && stat===Object.entries(parentA.stats).sort((a,b)=>b[1]-a[1])[0][0]?1:0;
       stats[stat]=Math.round(average)+variance+mentorStatBonus(mentor,stat)+(discipline.mods?.[stat]||0)+(event.mods?.[stat]||0)+sameBonus+(mutation?.stat?.[stat]||0);
+      if(legendCount && stat==='control')stats[stat]+=1;
+      if(legendCount>1 && stat==='power')stats[stat]+=1;
       stats[stat]=U.clamp(stats[stat],2,13);
     }
 
@@ -189,8 +192,8 @@
         comboWindow:event.comboWindow||1,
         mentorSource:mentor.source
       },
-      rarity:mutation?'ANOMALIE':generation>=4?'HÉRITAGE ANCIEN':generation>=2?'DYNASTIQUE':'HYBRIDE STABLE',
-      rarityColor:mutation?.color||(generation>=4?'#ffd56c':generation>=2?'#45f3d0':'#9e7bff'),
+      rarity:mutation?'ANOMALIE':legendCount?'HÉRITAGE LÉGENDAIRE':generation>=4?'HÉRITAGE ANCIEN':generation>=2?'DYNASTIQUE':'HYBRIDE STABLE',
+      rarityColor:mutation?.color||(legendCount?'#ffe78f':generation>=4?'#ffd56c':generation>=2?'#45f3d0':'#9e7bff'),
       legend:false, victories:0, defeats:0, bestScore:0, runHistory:[]
     };
     child.code=F.encodeChild(child);
@@ -204,10 +207,11 @@
 
   F.decodeChild = function(code){
     const clean=String(code).trim();
+    if(clean.length>120000)throw new Error('Code génétique trop volumineux.');
     if(!clean.startsWith('SOA1-'))throw new Error('Code génétique non reconnu.');
     const payload=U.decodeData(clean.slice(5));
     if(payload?.v!==1||!payload.child?.id)throw new Error('Code génétique incomplet.');
-    const child=payload.child;
+    const child=LF.validation.sanitizeHeir(payload.child);
     child.code=clean;
     child.runHistory=child.runHistory||[];
     return child;

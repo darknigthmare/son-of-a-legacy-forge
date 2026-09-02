@@ -1,7 +1,7 @@
 (function () {
   const LF = window.LF = window.LF || {};
 
-  LF.VERSION = '1.0.0';
+  LF.VERSION = '1.1.0';
 
   LF.ELEMENTS = {
     fire:     { name: 'Feu',       color: '#ff6b4a', dark: '#7d2637', symbol: '▲', verb: 'embrase' },
@@ -158,9 +158,9 @@
     'fire+ice': { name: 'Cendre Polaire', title: 'L’Héritier de la Vapeur Blanche', ability: 'Cataclysme de vapeur', desc: 'Une détonation thermique aveugle, brûle et gèle les survivants.', phrase: 'PARADOX' },
     'fire+water': { name: 'Marée Magmatique', title: 'Le Sang des Océans Rouges', ability: 'Tsunami volcanique', desc: 'Une vague de lave liquide traverse l’arène et laisse des geysers.', phrase: 'VOLCANO' },
     'fire+nature': { name: 'Floraison Cendrée', title: 'Le Jardinier des Flammes', ability: 'Forêt de braises', desc: 'Des racines ardentes emprisonnent les ennemis et rendent de la santé.', phrase: 'WILDFIRE' },
-    'fire+electric': { name: 'Plasma Royal', title: 'L’Héritier du Soleil Fracturé', ability: 'Couronne de plasma', desc: 'Déclenche une tempête de feu électrique autour du porteur.', phrase: 'STORM' },
+    'electric+fire': { name: 'Plasma Royal', title: 'L’Héritier du Soleil Fracturé', ability: 'Couronne de plasma', desc: 'Déclenche une tempête de feu électrique autour du porteur.', phrase: 'STORM' },
     'fire+time': { name: 'Dernière Étincelle', title: 'Celui Qui Brûle Demain', ability: 'Supernova différée', desc: 'Marque les ennemis ; l’explosion se répète quelques secondes plus tard.', phrase: 'FUTURE' },
-    'shadow+electric': { name: 'Éclair Noir', title: 'Le Fantôme de la Haute Tension', ability: 'Réseau du néant', desc: 'Téléporte entre les cibles en laissant un arc électrique.', phrase: 'GLITCH' },
+    'electric+shadow': { name: 'Éclair Noir', title: 'Le Fantôme de la Haute Tension', ability: 'Réseau du néant', desc: 'Téléporte entre les cibles en laissant un arc électrique.', phrase: 'GLITCH' },
     'shadow+spirit': { name: 'Veillée Sombre', title: 'L’Enfant des Noms Oubliés', ability: 'Parlement des ombres', desc: 'Invoque des doubles spectraux qui répètent les attaques.', phrase: 'GHOST' },
     'shadow+time': { name: 'Minuit Inversé', title: 'L’Héritier de l’Instant Invisible', ability: 'Vol de seconde', desc: 'Efface l’héritier du temps puis rejoue tous ses dégâts simultanément.', phrase: 'VOID' },
     'earth+electric': { name: 'Magnétar', title: 'Le Titan des Pôles Brisés', ability: 'Prison magnétique', desc: 'Attire ennemis et projectiles vers un noyau de pierre électrifié.', phrase: 'TITAN' },
@@ -170,9 +170,9 @@
     'electric+time': { name: 'Overclock', title: 'L’Erreur Plus Rapide que le Temps', ability: 'Boucle de surcharge', desc: 'Accélère tout l’héritier tandis que les ennemis restent figés.', phrase: 'GLITCH' },
     'ice+nature': { name: 'Hiver Vivant', title: 'La Graine du Dernier Gel', ability: 'Cathédrale de givre', desc: 'Fait pousser des cristaux vivants qui protègent et empalent.', phrase: 'WINTER' },
     'ice+sound': { name: 'Verre Chantant', title: 'La Cantatrice aux Mille Éclats', ability: 'Opéra de cristal', desc: 'Chaque note crée un cristal puis tous éclatent à l’unisson.', phrase: 'CRYSTAL' },
-    'nature+bio': { name: 'Évolution Sauvage', title: 'L’Héritier de la Ruche Verte', ability: 'Écosystème prédateur', desc: 'Libère des organismes qui chassent, empoisonnent et soignent.', phrase: 'CREATURE' },
-    'water+sound': { name: 'Sirène de Choc', title: 'La Voix des Fosses Insondables', ability: 'Chant de pression', desc: 'Une vague sonore liquide comprime tout sur son passage.', phrase: 'SIREN' },
-    'water+time': { name: 'Marée des Âges', title: 'Celui Qui Se Souvient des Océans', ability: 'Reflux temporel', desc: 'Rappelle ennemis et projectiles à leur position précédente.', phrase: 'AEON' },
+    'bio+nature': { name: 'Évolution Sauvage', title: 'L’Héritier de la Ruche Verte', ability: 'Écosystème prédateur', desc: 'Libère des organismes qui chassent, empoisonnent et soignent.', phrase: 'CREATURE' },
+    'sound+water': { name: 'Sirène de Choc', title: 'La Voix des Fosses Insondables', ability: 'Chant de pression', desc: 'Une vague sonore liquide comprime tout sur son passage.', phrase: 'SIREN' },
+    'time+water': { name: 'Marée des Âges', title: 'Celui Qui Se Souvient des Océans', ability: 'Reflux temporel', desc: 'Rappelle ennemis et projectiles à leur position précédente.', phrase: 'AEON' },
     'spirit+time': { name: 'Ancêtre Futur', title: 'L’Héritier de Toutes les Vies', ability: 'Conseil des possibles', desc: 'Invoque plusieurs versions temporelles de l’héritier.', phrase: 'LEGEND' },
     'beast+bio': { name: 'Apex-9', title: 'Le Prédateur que la Nature Refusa', ability: 'Mue terminale', desc: 'Se transforme temporairement en chasseur bio-mécanique incontrôlable.', phrase: 'MONSTER' },
     'beast+sound': { name: 'Hurlement Royal', title: 'La Gorge de la Chasse Éternelle', ability: 'Cri d’extinction', desc: 'Un rugissement marque les proies puis déclenche une charge.', phrase: 'BEAST' }
@@ -229,6 +229,12 @@
     { id: 'shield', icon: '⬡', name: 'Peau de Fracture', desc: 'Absorbe un coup toutes les 14 secondes.', apply: g => { g.player.shieldEnabled = true; g.player.shieldTimer = 0; } },
     { id: 'lifesteal', icon: '☽', name: 'Dîme vitale', desc: 'Récupère 3 % des dégâts infligés.', apply: g => { g.player.lifeSteal += .03; } },
     { id: 'blast', icon: '✺', name: 'Mort explosive', desc: 'Les ennemis éliminés explosent.', apply: g => { g.player.deathBlast += 18; } }
+  ];
+
+  LF.LEGACY_UPGRADES = [
+    { id: 'vitality', name: 'Patrimoine endurant', maxRank: 5, baseCost: 70, icon: '♥', desc: '+4 % de points de vie maximum par rang.' },
+    { id: 'power', name: 'Noyau dominant', maxRank: 5, baseCost: 85, icon: '▲', desc: '+3 % de dégâts par rang.' },
+    { id: 'resonance', name: 'Résonance dynastique', maxRank: 5, baseCost: 100, icon: '◆', desc: '+5 % d’Essence gagnée par rang.' }
   ];
 
   LF.ENEMY_ARCHETYPES = {

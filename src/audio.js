@@ -6,6 +6,7 @@
       this.context = null;
       this.master = null;
       this.enabled = true;
+      this.paused = false;
       this.unlocked = false;
       this.musicNodes = [];
     }
@@ -33,8 +34,13 @@
     setEnabled(value) {
       this.enabled = Boolean(value);
       this.unlock();
-      if (this.master && this.context) this.master.gain.setTargetAtTime(this.enabled ? .16 : 0, this.context.currentTime, .02);
+      if (this.master && this.context) this.master.gain.setTargetAtTime(this.enabled ? (this.paused ? .035 : .16) : 0, this.context.currentTime, .02);
       if (!this.enabled) this.stopMusic();
+    }
+
+    setPaused(value) {
+      this.paused = Boolean(value);
+      if(this.master&&this.context&&this.enabled)this.master.gain.setTargetAtTime(this.paused ? .035 : .16,this.context.currentTime,.04);
     }
 
     tone(frequency, duration = .08, type = 'sine', volume = .3, slide = 0, delay = 0) {

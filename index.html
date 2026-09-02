@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#080914" />
   <meta name="description" content="SON OF A…! Legacy Forge — Choisissez deux origines, forgez leur héritier et combattez à travers les Fractures." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'" />
   <title>SON OF A…! — Legacy Forge</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#screenRoot">Aller au contenu</a>
   <div id="app" class="app-shell">
     <div class="ambient ambient-a"></div>
     <div class="ambient ambient-b"></div>
@@ -35,12 +37,12 @@
 
     <footer class="footer-bar">
       <span id="statusText">BERCEAU ZÉRO — EN ATTENTE</span>
-      <span class="footer-version">ÉDITION NAVIGATEUR 1.0</span>
+      <span class="footer-version">ÉDITION NAVIGATEUR 1.1</span>
     </footer>
   </div>
 
   <div id="toastLayer" class="toast-layer" aria-live="assertive"></div>
-  <div id="modalLayer" class="modal-layer hidden" role="dialog" aria-modal="true"></div>
+  <div id="modalLayer" class="modal-layer hidden" role="dialog" aria-modal="true" tabindex="-1"></div>
 
   <template id="menuTemplate">
     <section class="menu-screen screen-enter">
@@ -53,9 +55,12 @@
           <button class="secondary-button menu-continue">Continuer la dynastie</button>
           <button class="ghost-button menu-lab">Laboratoire libre</button>
           <button class="ghost-button menu-dynasty">Arbre généalogique</button>
+          <button class="ghost-button menu-legacy">Héritage du Berceau</button>
         </div>
         <div class="menu-meta">
           <button class="text-button menu-help">Comment jouer</button>
+          <span>•</span>
+          <button class="text-button menu-settings">Réglages et accessibilité</button>
           <span>•</span>
           <button class="text-button menu-reset">Réinitialiser la sauvegarde</button>
         </div>
@@ -202,6 +207,7 @@
               <button data-action="dash">↯</button>
             </div>
           </div>
+          <div class="rotate-device-hint" aria-hidden="true">Tourne l’écran pour une arène plus lisible</div>
         </div>
       </div>
     </section>
@@ -255,10 +261,10 @@
       <div class="help-grid">
         <article><span>01</span><h3>Choisis deux origines</h3><p>Combine n’importe quels personnages, y compris des héritiers de ta propre dynastie. Les statistiques, éléments, silhouettes et faiblesses sont transmis.</p></article>
         <article><span>02</span><h3>Façonne l’éducation</h3><p>Choisis un mentor, une discipline et un événement fondateur. Une même paire peut ainsi produire plusieurs enfants très différents.</p></article>
-        <article><span>03</span><h3>Maîtrise la fusion</h3><p>Déplace-toi avec ZQSD ou WASD, vise à la souris, attaque au clic et utilise les pouvoirs parentaux avec A/Q et E. R déclenche la capacité fusionnée.</p></article>
+        <article><span>03</span><h3>Maîtrise la fusion</h3><p>Déplace-toi avec ZQSD ou WASD, vise à la souris, attaque au clic et utilise les pouvoirs parentaux avec 1 et 2. R déclenche la capacité fusionnée.</p></article>
         <article><span>04</span><h3>Survis aux Fractures</h3><p>Traverse trois royaumes, élimine les vagues, choisis des améliorations en montant de niveau et bats le Progéniteur.</p></article>
         <article><span>05</span><h3>Bâtis une dynastie</h3><p>Victoire ou défaite, l’héritier est archivé. Une victoire lui confère le statut de Légende et davantage d’Essence dynastique.</p></article>
-        <article><span>06</span><h3>Joue hors connexion</h3><p>Après une première ouverture via un petit serveur local ou un hébergement, le jeu peut être installé comme application web et conserve la sauvegarde dans le navigateur.</p></article>
+        <article><span>06</span><h3>Reprends sans perdre ta lignée</h3><p>La mission est sécurisée au début de chaque vague. Après une fermeture ou une perte de connexion, Continuer reprend au dernier point sûr.</p></article>
       </div>
       <div class="controls-table">
         <div><kbd>ZQSD</kbd><span>Déplacement</span></div><div><kbd>SOURIS</kbd><span>Visée</span></div><div><kbd>CLIC</kbd><span>Attaque de base</span></div><div><kbd>1</kbd><span>Pouvoir A</span></div><div><kbd>2</kbd><span>Pouvoir B</span></div><div><kbd>R</kbd><span>Fusion</span></div><div><kbd>ESPACE</kbd><span>Esquive</span></div><div><kbd>ÉCHAP</kbd><span>Pause</span></div>
@@ -266,8 +272,24 @@
     </section>
   </template>
 
+  <template id="legacyTemplate">
+    <section class="legacy-screen screen-enter">
+      <div class="section-heading compact-heading">
+        <div>
+          <p class="eyebrow">MÉTA-PROGRESSION — HÉRITAGE DU BERCEAU</p>
+          <h2>Stabilise toute la dynastie</h2>
+          <p>Investis l’Essence gagnée en campagne. Chaque amélioration s’applique à toutes les missions futures.</p>
+        </div>
+        <div class="legacy-balance"></div>
+      </div>
+      <div class="legacy-grid"></div>
+      <div class="legacy-note">Le Laboratoire libre ne rapporte pas d’Essence et n’altère pas les archives : utilise-le pour tester une combinaison sans risque.</div>
+    </section>
+  </template>
+
   <script defer src="src/data.js"></script>
   <script defer src="src/utils.js"></script>
+  <script defer src="src/validation.js"></script>
   <script defer src="src/storage.js"></script>
   <script defer src="src/audio.js"></script>
   <script defer src="src/render.js"></script>
